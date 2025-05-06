@@ -6,23 +6,23 @@ export const siteConfig = {
     "HotTrends提供实时热搜话题的监测与分析，帮助您了解当前的热门话题趋势。",
   navItems: [
     {
-      label: "Home",
+      label: "首页",
       href: "/",
     },
     {
-      label: "Docs",
+      label: "热点",
+      href: "/trends",
+    },
+    {
+      label: "创作",
+      href: "/mind",
+    },
+    {
+      label: "开发",
       href: "/docs",
     },
     {
-      label: "Pricing",
-      href: "/pricing",
-    },
-    {
-      label: "Blog",
-      href: "/blog",
-    },
-    {
-      label: "About",
+      label: "关于",
       href: "/about",
     },
   ],
