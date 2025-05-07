@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { weiboService } from './weibo.service';
 
 export async function GET() {

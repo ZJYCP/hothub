@@ -1,7 +1,7 @@
 'use server';
-import { PlatformEnum, WeiboTrendItem } from '@/types';
-import { unstable_cache } from 'next/cache';
 import { HotService } from '../base.service';
+
+import { PlatformEnum, WeiboTrendItem } from '@/types';
 
 interface WeiboHotItem {
   note: string;
@@ -30,5 +30,6 @@ class WeiboService extends HotService {
 
 export async function weiboService() {
   const weiboService = WeiboService.getInstance<WeiboService>();
+
   return await weiboService.fetchHotList();
 }

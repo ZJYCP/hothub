@@ -1,7 +1,8 @@
 'use client';
-import { TrendItem } from '@/types';
 import React from 'react';
 import { useRouter } from 'next/navigation';
+
+import { TrendItem } from '@/types';
 
 interface TrendRowProps {
   data: TrendItem;
@@ -13,6 +14,7 @@ export default function TrendRow(props: TrendRowProps & { platform?: string }) {
 
   return (
     <div
+      role="presentation"
       className="group flex items-center p-3 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors duration-200"
       onClick={() => {
         router.push(

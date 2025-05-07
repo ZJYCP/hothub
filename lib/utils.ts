@@ -1,7 +1,8 @@
-import { platformsInfo } from '@/config/platforms';
-import { PlatformEnum } from '@/types';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+
+import { platformsInfo } from '@/config/platforms';
+import { PlatformEnum } from '@/types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

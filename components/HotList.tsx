@@ -1,5 +1,5 @@
-"use client";
-import { useState } from "react";
+'use client';
+import { useState } from 'react';
 
 type HotItem = {
   id: string;
@@ -14,44 +14,42 @@ interface HotListProps {
 }
 
 export function HotList({ initialData }: HotListProps) {
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState('all');
 
   const filteredList =
-    activeTab === "all"
-      ? initialData
-      : initialData.filter((item) => item.source === activeTab);
+    activeTab === 'all' ? initialData : initialData.filter((item) => item.source === activeTab);
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4"></div>
+      <div className="grid gap-4" />
       <div className="flex space-x-4 mb-6">
         <button
           className={`px-4 py-2 rounded-md transition-colors duration-200 ${
-            activeTab === "all"
-              ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
-              : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            activeTab === 'all'
+              ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md'
+              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
           }`}
-          onClick={() => setActiveTab("all")}
+          onClick={() => setActiveTab('all')}
         >
           全部
         </button>
         <button
           className={`px-4 py-2 rounded-md transition-colors duration-200 ${
-            activeTab === "微博"
-              ? "bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-md"
-              : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            activeTab === '微博'
+              ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-md'
+              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
           }`}
-          onClick={() => setActiveTab("微博")}
+          onClick={() => setActiveTab('微博')}
         >
           微博
         </button>
         <button
           className={`px-4 py-2 rounded-md transition-colors duration-200 ${
-            activeTab === "知乎"
-              ? "bg-gradient-to-r from-blue-400 to-cyan-500 text-white shadow-md"
-              : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            activeTab === '知乎'
+              ? 'bg-gradient-to-r from-blue-400 to-cyan-500 text-white shadow-md'
+              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
           }`}
-          onClick={() => setActiveTab("知乎")}
+          onClick={() => setActiveTab('知乎')}
         >
           知乎
         </button>
@@ -63,12 +61,7 @@ export function HotList({ initialData }: HotListProps) {
             key={item.id}
             className="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
           >
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block"
-            >
+            <a className="block" href={item.url} rel="noopener noreferrer" target="_blank">
               <h3 className="text-lg font-medium text-gray-800 hover:text-blue-600 transition-colors">
                 {item.title}
               </h3>
@@ -76,9 +69,7 @@ export function HotList({ initialData }: HotListProps) {
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                   {item.source}
                 </span>
-                <span className="text-gray-600">
-                  🔥 {item.heat.toLocaleString()} 热度
-                </span>
+                <span className="text-gray-600">🔥 {item.heat.toLocaleString()} 热度</span>
               </div>
             </a>
           </div>

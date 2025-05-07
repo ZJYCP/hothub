@@ -1,14 +1,16 @@
 // components/HotSearchCard.tsx
-import { HotTrendCardProps } from '@/types/analyse';
 import { Card, CardHeader, CardBody, Avatar, Badge, Button, Divider, Chip } from '@heroui/react';
+
+import { HotTrendCardProps } from '@/types/analyse';
 
 export default function HotSearchCard(props: HotTrendCardProps) {
   const { title, avatarUrl, tag, source, timestamp, metrics, isOnList } = props;
+
   return (
     <Card className="w-full mx-auto p-4">
       <CardHeader className="flex items-center space-x-4">
         {avatarUrl ? (
-          <Avatar src={avatarUrl} alt={title} size="lg" radius="sm" />
+          <Avatar alt={title} radius="sm" size="lg" src={avatarUrl} />
         ) : (
           <div className="flex items-center justify-center w-12 h-12 rounded-md bg-blue-500 text-white text-3xl font-bold">
             {title.charAt(0)}

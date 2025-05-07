@@ -1,7 +1,8 @@
 'use client';
+import React from 'react';
+
 import { platformsInfo } from '@/config/platforms';
 import { PlatformEnum } from '@/types';
-import React from 'react';
 
 interface PlatformSelectorProps {
   value: PlatformEnum;
@@ -15,7 +16,6 @@ export default function PlatformSelector(props: PlatformSelectorProps) {
       {platformsInfo.map((platform) => (
         <button
           key={platform.id}
-          onClick={() => onChange?.(platform.id)}
           className={`
             px-4 py-2 rounded-md transition-all duration-300
             ${
@@ -24,6 +24,7 @@ export default function PlatformSelector(props: PlatformSelectorProps) {
                 : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
             }
           `}
+          onClick={() => onChange?.(platform.id)}
         >
           {platform.name}
         </button>

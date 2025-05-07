@@ -1,11 +1,11 @@
+import React from 'react';
+
 import HotSearchCard from '@/components/TrendAnalyse/BasicInfo';
 import { platformsInfo } from '@/config/platforms';
 import { HotTrendCardProps } from '@/types/analyse';
-import { useParams, useSearchParams } from 'next/navigation';
-import React from 'react';
 
 interface AnalysePageProps {
-  searchParams: { [key: string]: string | undefined };
+  searchParams: any;
 }
 
 export default async function AnalysePage(props: AnalysePageProps) {
@@ -27,9 +27,10 @@ export default async function AnalysePage(props: AnalysePageProps) {
       host: '新华社 | 501家媒体...',
     },
   };
+
   return (
     <div>
-      <HotSearchCard {...mockData}></HotSearchCard>
+      <HotSearchCard {...mockData} />
     </div>
   );
 }

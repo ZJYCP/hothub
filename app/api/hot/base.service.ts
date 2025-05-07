@@ -1,5 +1,6 @@
-import { TrendItem } from '@/types';
 import { unstable_cache } from 'next/cache';
+
+import { TrendItem } from '@/types';
 
 export abstract class HotService {
   public cachedAt: string = '';
@@ -18,9 +19,12 @@ export abstract class HotService {
   protected abstract transformData(data: any): Promise<TrendItem[]>;
 
   static getInstance<T extends HotService>(this: new () => T): T {
+    // @ts-ignore
     if (!this.instance) {
+      // @ts-ignore
       this.instance = new this();
     }
+    // @ts-ignore
     return this.instance as T;
   }
 
@@ -29,6 +33,7 @@ export abstract class HotService {
       async () => {
         const res = await fetch(this.apiUrl);
         const data = await res.json();
+
         return { data, cachedAt: new Date().toISOString() };
       },
       [`${this.constructor.name.toLowerCase()}-data`],
@@ -38,8 +43,10 @@ export abstract class HotService {
 
   async fetchHotList(): Promise<{ hotList: TrendItem[]; cachedAt: string }> {
     const { data, cachedAt } = await this.getCachedData();
+
     this.cachedAt = cachedAt;
     const hotList = await this.transformData(data);
+
     return { hotList, cachedAt: this.cachedAt };
   }
 }

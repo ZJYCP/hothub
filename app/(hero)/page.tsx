@@ -1,12 +1,12 @@
-import { FeaturesSectionDemo } from '@/components/FeatureCard'
-import HeroSectionOne from '@/components/hero-section-demo-1'
-import React from 'react'
+import React from 'react';
+
+import HeroSectionOne from '@/components/hero-section-demo-1';
 
 export default function HeroPage() {
   return (
     <>
-   <HeroSectionOne></HeroSectionOne>
-    {/* <FeaturesSectionDemo></FeaturesSectionDemo> */}
+      <HeroSectionOne />
+      {/* <FeaturesSectionDemo></FeaturesSectionDemo> */}
     </>
-  )
+  );
 }

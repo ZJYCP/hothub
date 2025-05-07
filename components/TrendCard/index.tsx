@@ -1,7 +1,9 @@
 import React from 'react';
-import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image } from '@heroui/react';
-import { PlatformEnum, TrendItem } from '@/types';
+import { Card, CardHeader, CardBody, CardFooter, Divider, Image } from '@heroui/react';
+
 import TrendRow from './TrendRow';
+
+import { PlatformEnum, TrendItem } from '@/types';
 import { transformPlatformToLabel } from '@/lib/utils';
 
 interface TrendCardProps {
@@ -11,6 +13,7 @@ interface TrendCardProps {
 }
 export default function TrendCard(props: TrendCardProps) {
   const { platform, data, cachedAt } = props;
+
   return (
     <Card className="flex-1">
       <CardHeader className="flex gap-3">
@@ -40,12 +43,12 @@ export default function TrendCard(props: TrendCardProps) {
       <Divider />
       <CardBody className="max-h-[1200px]">
         {data.map((item, index) => {
-          return <TrendRow data={item} key={item.id}></TrendRow>;
+          return <TrendRow key={item.id} data={item} />;
         })}
       </CardBody>
       <Divider />
       <CardFooter>
-        <span></span>
+        <span />
       </CardFooter>
     </Card>
   );

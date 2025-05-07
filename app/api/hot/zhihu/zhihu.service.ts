@@ -1,6 +1,7 @@
 'use server';
-import { PlatformEnum, ZhihuTrendItem } from '@/types';
 import { HotService } from '../base.service';
+
+import { PlatformEnum, ZhihuTrendItem } from '@/types';
 
 interface ZhihuHotItem {
   title: string;
@@ -29,5 +30,6 @@ class ZhihuService extends HotService {
 
 export async function zhihuService() {
   const zhihuService = ZhihuService.getInstance<ZhihuService>();
+
   return await zhihuService.fetchHotList();
 }
