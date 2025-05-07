@@ -49,7 +49,27 @@ export const Navbar = () => {
   );
 
   return (
-    <HeroUINavbar maxWidth="2xl" position="sticky">
+    <HeroUINavbar
+      maxWidth="2xl"
+      position="sticky"
+      isBordered
+      classNames={{
+        item: [
+          'flex',
+          'relative',
+          'h-full',
+          'items-center',
+          "data-[active=true]:after:content-['']",
+          'data-[active=true]:after:absolute',
+          'data-[active=true]:after:bottom-0',
+          'data-[active=true]:after:left-0',
+          'data-[active=true]:after:right-0',
+          'data-[active=true]:after:h-[2px]',
+          'data-[active=true]:after:rounded-[2px]',
+          'data-[active=true]:after:bg-primary',
+        ],
+      }}
+    >
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">

@@ -1,10 +1,11 @@
 import React from 'react';
 import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image } from '@heroui/react';
-import { TrendItem } from '@/types';
+import { PlatformEnum, TrendItem } from '@/types';
 import TrendRow from './TrendRow';
+import { transformPlatformToLabel } from '@/lib/utils';
 
 interface TrendCardProps {
-  platform?: string;
+  platform?: PlatformEnum;
   data: TrendItem[];
   cachedAt: string;
 }
@@ -21,7 +22,19 @@ export default function TrendCard(props: TrendCardProps) {
           width={40}
         />
         <div className="flex ">
-          <p className="text-md">{platform}</p>
+          <p className="text-md">{transformPlatformToLabel(platform)}</p>
+          {cachedAt && (
+            <span className="ml-2">
+              更新时间：
+              {new Date(cachedAt).toLocaleString('zh-CN', {
+                month: 'numeric',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+              })}
+            </span>
+          )}
         </div>
       </CardHeader>
       <Divider />
@@ -32,15 +45,7 @@ export default function TrendCard(props: TrendCardProps) {
       </CardBody>
       <Divider />
       <CardFooter>
-        <span>
-          更新时间：
-          {new Date(cachedAt).toLocaleString('zh-CN', {
-            month: 'numeric',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
-        </span>
+        <span></span>
       </CardFooter>
     </Card>
   );

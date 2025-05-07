@@ -9,15 +9,15 @@ export interface HotTrendsResponse {
   cachedAt: string;
 }
 export enum PlatformEnum {
-  Weibo = '微博',
-  Bilibili = '哔哩哔哩',
-  Zhihu = '知乎',
-  Juejin = '掘金',
-  Douyin = '抖音',
-  Github = 'Github',
-  Twitter = 'Twitter',
-  Reddit = 'Reddit',
-  Youtube = 'Youtube',
+  Weibo = 'weibo',
+  Bilibili = 'bilibili',
+  Zhihu = 'zhihu',
+  Juejin = 'juejin',
+  Douyin = 'douyin',
+  Github = 'github',
+  Twitter = 'twitter',
+  Reddit = 'reddit',
+  Youtube = 'youtube',
 }
 export interface TrendItem {
   id: string;

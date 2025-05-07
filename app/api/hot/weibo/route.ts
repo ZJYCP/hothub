@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { fetch_weibo } from './weibo.service';
+import { weiboService } from './weibo.service';
 
 export async function GET() {
   try {
-    const hotList = await fetch_weibo();
+    const hotList = await weiboService();
 
     return NextResponse.json(hotList);
   } catch {

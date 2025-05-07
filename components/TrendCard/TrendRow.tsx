@@ -1,18 +1,25 @@
-"use client"
-import { TrendItem } from '@/types'
-import React from 'react'
+'use client';
+import { TrendItem } from '@/types';
+import React from 'react';
+import { useRouter } from 'next/navigation';
 
 interface TrendRowProps {
-  data: TrendItem
+  data: TrendItem;
 }
-export default function TrendRow(props: TrendRowProps) {
+export default function TrendRow(props: TrendRowProps & { platform?: string }) {
+  const router = useRouter();
   const { data } = props;
   const heatPercentage = Math.min(100, (data.heat / 1000000) * 100);
-  
+
   return (
-    <div className="group flex items-center p-3 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors duration-200" onClick={()=>{
-      window.open(data.url, '_blank')
-    }}>
+    <div
+      className="group flex items-center p-3 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors duration-200"
+      onClick={() => {
+        router.push(
+          `/analyse?name=${encodeURIComponent(data.title)}&platform=${encodeURIComponent(data.source)}`,
+        );
+      }}
+    >
       {data.rank !== undefined && (
         <span className="text-gray-500 font-medium w-6 text-center">{data.rank + 1}</span>
       )}
@@ -24,16 +31,14 @@ export default function TrendRow(props: TrendRowProps) {
           <span className="text-sm text-gray-500">{data.heat.toLocaleString()}</span>
         </div>
         <div className="mt-1 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-yellow-400 to-red-500" 
+          <div
+            className="h-full bg-gradient-to-r from-yellow-400 to-red-500"
             style={{ width: `${heatPercentage}%` }}
           />
         </div>
 
-        <div>
-          详情
-        </div>
+        <div>详情</div>
       </div>
     </div>
-  )
+  );
 }

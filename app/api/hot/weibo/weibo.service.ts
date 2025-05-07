@@ -1,6 +1,8 @@
 'use server';
 import { PlatformEnum, WeiboTrendItem } from '@/types';
 import { unstable_cache } from 'next/cache';
+import { HotService } from '../base.service';
+
 interface WeiboHotItem {
   note: string;
   num: string;
@@ -8,31 +10,25 @@ interface WeiboHotItem {
   word_scheme: string;
 }
 
-let cachedAt: string | null = null;
-const getCachedWeiboData = unstable_cache(
-  async () => {
-    const res = await fetch('https://weibo.com/ajax/side/hotSearch');
-    const data = await res.json();
-    cachedAt = new Date().toISOString(); // 记录缓存生成时间
-    return { data, cachedAt };
-  },
-  ['weibo-data'], // 缓存 key
-  { revalidate: 120 }, // 60秒缓存
-);
+class WeiboService extends HotService {
+  protected apiUrl: string = 'https://weibo.com/ajax/side/hotSearch';
 
-export async function fetch_weibo() {
-  const { data, cachedAt } = await getCachedWeiboData();
+  protected async transformData(data: any): Promise<WeiboTrendItem[]> {
+    return data.data.realtime.map(
+      (item: WeiboHotItem, index: number) =>
+        ({
+          id: 'weibo_' + index.toString(),
+          title: item.note,
+          source: PlatformEnum.Weibo,
+          heat: parseInt(item.num),
+          rank: item.rank,
+          url: `https://s.weibo.com/weibo?q=${encodeURIComponent(item.word_scheme)}`,
+        }) as WeiboTrendItem,
+    );
+  }
+}
 
-  const hotList = data.data.realtime.map(
-    (item: WeiboHotItem, index: number) =>
-      ({
-        id: 'weibo_' + index.toString(),
-        title: item.note,
-        source: PlatformEnum.Weibo,
-        heat: parseInt(item.num),
-        rank: item.rank,
-        url: `https://s.weibo.com/weibo?q=${encodeURIComponent(item.word_scheme)}`,
-      }) as WeiboTrendItem,
-  );
-  return { hotList, cachedAt };
+export async function weiboService() {
+  const weiboService = WeiboService.getInstance<WeiboService>();
+  return await weiboService.fetchHotList();
 }
