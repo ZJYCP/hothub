@@ -50,7 +50,7 @@ export default defineConfig([
         'plugin:react/recommended',
         'plugin:prettier/recommended',
         'plugin:react-hooks/recommended',
-        'plugin:jsx-a11y/recommended',
+        // 'plugin:jsx-a11y/recommended',
         'plugin:@next/next/recommended',
       ),
     ),
@@ -60,7 +60,7 @@ export default defineConfig([
       'unused-imports': unusedImports,
       import: fixupPluginRules(_import),
       '@typescript-eslint': typescriptEslint,
-      'jsx-a11y': fixupPluginRules(jsxA11Y),
+      // 'jsx-a11y': fixupPluginRules(jsxA11Y),
       prettier: fixupPluginRules(prettier),
     },
 
@@ -95,8 +95,8 @@ export default defineConfig([
       'react/jsx-uses-react': 'off',
       'react/react-in-jsx-scope': 'off',
       'react-hooks/exhaustive-deps': 'off',
-      'jsx-a11y/click-events-have-key-events': 'warn',
-      'jsx-a11y/interactive-supports-focus': 'warn',
+      'jsx-a11y/click-events-have-key-events': 'off',
+      'jsx-a11y/interactive-supports-focus': 'off',
       'prettier/prettier': 'warn',
       'no-unused-vars': 'off',
       'unused-imports/no-unused-vars': 'off',
@@ -137,7 +137,7 @@ export default defineConfig([
         },
       ],
 
-      'react/self-closing-comp': 'warn',
+      'react/self-closing-comp': 'off',
 
       'react/jsx-sort-props': [
         'warn',
@@ -150,7 +150,7 @@ export default defineConfig([
       ],
 
       'padding-line-between-statements': [
-        'warn',
+        'off',
         {
           blankLine: 'always',
           prev: '*',

@@ -1,9 +1,15 @@
-import { title } from '@/components/primitives';
+import { redirect } from 'next/navigation';
 
-export default function AboutPage() {
-  return (
-    <div>
-      <h1 className={title()}>About</h1>
-    </div>
-  );
+import { createClient } from '@/utils/supabase/server';
+
+export default async function AboutPage() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error || !data?.user) {
+    redirect('/login');
+  }
+
+  return <p>Hello {data.user.email}</p>;
 }

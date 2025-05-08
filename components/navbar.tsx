@@ -25,8 +25,10 @@ import {
   SearchIcon,
   Logo,
 } from '@/components/icons';
+import { Listbox, ListboxItem, Tooltip } from '@heroui/react';
+import UserManagerCom from './UserManage';
 
-export const Navbar = () => {
+export const Navbar = async () => {
   const searchInput = (
     <Input
       aria-label="Search"
@@ -110,7 +112,7 @@ export const Navbar = () => {
         </NavbarItem>
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem className="hidden md:flex">
-          <Button
+          {/* <Button
             isExternal
             as={Link}
             className="text-sm font-normal text-default-600 bg-default-100"
@@ -119,7 +121,8 @@ export const Navbar = () => {
             variant="flat"
           >
             Sponsor
-          </Button>
+          </Button> */}
+          <UserManagerCom></UserManagerCom>
         </NavbarItem>
       </NavbarContent>
 
