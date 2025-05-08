@@ -3,6 +3,7 @@ import React from 'react';
 import HotSearchCard from '@/components/TrendAnalyse/BasicInfo';
 import { platformsInfo } from '@/config/platforms';
 import { HotTrendCardProps } from '@/types/analyse';
+import AiSummaryCom from '@/components/TrendAnalyse/AiSummary';
 
 interface AnalysePageProps {
   searchParams: any;
@@ -31,6 +32,7 @@ export default async function AnalysePage(props: AnalysePageProps) {
   return (
     <div>
       <HotSearchCard {...mockData} />
+      <AiSummaryCom></AiSummaryCom>
     </div>
   );
 }
