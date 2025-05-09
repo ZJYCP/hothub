@@ -15,8 +15,8 @@ import {
 import React from 'react';
 import { Mail } from 'lucide-react';
 import { Lock } from 'lucide-react';
-import { useMemoizedFn, useRequest } from 'ahooks';
 import { login } from './actions';
+import { useRequest } from '@/lib/useRequest';
 
 interface LoginInModalProps {
   isOpen: boolean;

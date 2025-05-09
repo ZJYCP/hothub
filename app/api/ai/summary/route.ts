@@ -3,7 +3,7 @@ import { experimental_createMCPClient, streamText } from 'ai';
 import { generateSummaryPrompt } from './prompt';
 import { createXai } from '@ai-sdk/xai';
 import { createDeepSeek } from '@ai-sdk/deepseek';
-
+import prisma from '@/lib/prisma';
 const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   baseURL: process.env.OPENAI_API_BASE_URL,
@@ -57,6 +57,14 @@ export async function POST(req: Request) {
       tools,
       onFinish: async (res) => {
         await close_mcp_handler();
+        await prisma.hotTrend.update({
+          where: {
+            title: prompt,
+          },
+          data: {
+            analyse: res.text,
+          },
+        });
       },
       onError: async (error) => {
         console.log(error);

@@ -1,7 +1,12 @@
 import { unstable_cache } from 'next/cache';
 
-import { TrendItem } from '@/types';
-
+import { PlatformEnum, TrendItem } from '@/types';
+import * as lodash from 'lodash';
+import prisma from '@/lib/prisma';
+/**
+ * 抽象类 HotService
+ * 用于定义获取热门数据的通用方法
+ */
 export abstract class HotService {
   public cachedAt: string = '';
   private static instance: HotService;
@@ -10,6 +15,8 @@ export abstract class HotService {
    * 子类必须实现的属性，用于指定 API 地址
    */
   protected abstract apiUrl: string;
+
+  protected abstract platform: PlatformEnum;
 
   /**
    * 子类必须实现的方法，用于转换数据为 TrendItem 数组
@@ -33,8 +40,53 @@ export abstract class HotService {
       async () => {
         const res = await fetch(this.apiUrl);
         const data = await res.json();
+        const hotList = await this.transformData(data);
 
-        return { data, cachedAt: new Date().toISOString() };
+        try {
+          const dataExist = await prisma.hotTrend.findMany({
+            where: {
+              source: this.platform,
+            },
+          });
+
+          const newTitleList = hotList.map((item) => item.title);
+          const existTitleList = dataExist.map((item) => item.title);
+          // title 存在的话，就更新； 不存在的话，就创建； 没有了的就删除
+          const updateTitleList = lodash.intersection(newTitleList, existTitleList);
+          const createTitleList = lodash.difference(newTitleList, existTitleList);
+          const deleteTitleList = lodash.difference(existTitleList, newTitleList);
+          // 批量更新操作
+          await prisma.$transaction([
+            ...updateTitleList.map((title) => {
+              const item = hotList.find((item) => item.title === title);
+              return item
+                ? prisma.hotTrend.update({
+                    where: { title },
+                    data: lodash.omit(item, ['id']),
+                  })
+                : prisma.hotTrend.findUnique({ where: { title } });
+            }),
+            // 批量创建操作
+            ...createTitleList.map((title) => {
+              const item = hotList.find((item) => item.title === title);
+              return item
+                ? prisma.hotTrend.create({
+                    data: lodash.omit(item, ['id']),
+                  })
+                : prisma.hotTrend.findUnique({ where: { title } });
+            }),
+            // 批量删除操作
+            ...deleteTitleList.map((title) =>
+              prisma.hotTrend.delete({
+                where: { title },
+              }),
+            ),
+          ]);
+        } catch (error) {
+          console.log('error', error);
+        } finally {
+          return { hotList, cachedAt: new Date().toISOString() };
+        }
       },
       [`${this.constructor.name.toLowerCase()}-data`],
       { revalidate: 300 },
@@ -42,10 +94,9 @@ export abstract class HotService {
   }
 
   async fetchHotList(): Promise<{ hotList: TrendItem[]; cachedAt: string }> {
-    const { data, cachedAt } = await this.getCachedData();
+    const { hotList, cachedAt } = await this.getCachedData();
 
     this.cachedAt = cachedAt;
-    const hotList = await this.transformData(data);
 
     return { hotList, cachedAt: this.cachedAt };
   }

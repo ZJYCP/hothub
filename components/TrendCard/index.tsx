@@ -14,14 +14,27 @@ interface TrendCardProps {
 export default function TrendCard(props: TrendCardProps) {
   const { platform, data, cachedAt } = props;
 
+  // 根据platform匹配logo
+  const platformLogoMap: Record<PlatformEnum, string> = {
+    [PlatformEnum.Weibo]: '/images/weibo.svg',
+    [PlatformEnum.Bilibili]: '',
+    [PlatformEnum.Zhihu]: '/images/zhihu.svg',
+    [PlatformEnum.Juejin]: '',
+    [PlatformEnum.Douyin]: '',
+    [PlatformEnum.Github]: '',
+    [PlatformEnum.Twitter]: '',
+    [PlatformEnum.Reddit]: '',
+    [PlatformEnum.Youtube]: '',
+  };
+
   return (
     <Card className="flex-1">
       <CardHeader className="flex gap-3">
         <Image
-          alt="heroui logo"
+          alt="logo"
           height={40}
           radius="sm"
-          src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
+          src={platform ? platformLogoMap[platform] : ''}
           width={40}
         />
         <div className="flex ">

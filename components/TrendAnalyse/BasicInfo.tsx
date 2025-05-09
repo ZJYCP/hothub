@@ -2,9 +2,10 @@
 import { Card, CardHeader, CardBody, Avatar, Badge, Button, Divider, Chip } from '@heroui/react';
 
 import { HotTrendCardProps } from '@/types/analyse';
+import OperationsCom from './Operations';
 
 export default function HotSearchCard(props: HotTrendCardProps) {
-  const { title, avatarUrl, tag, source, timestamp, metrics, isOnList } = props;
+  const { title, avatarUrl, tag, source, timestamp, metrics, isOnList, url } = props;
 
   return (
     <Card className="w-full mx-auto p-4">
@@ -28,20 +29,7 @@ export default function HotSearchCard(props: HotTrendCardProps) {
           </div>
         </div>
         {/* 操作区 */}
-        <div className="flex gap-4">
-          <Button
-            className="bg-gradient-to-tr from-cyan-500 to-teal-500 text-white shadow-lg"
-            radius="full"
-          >
-            AI 创作
-          </Button>
-          <Button
-            className="bg-gradient-to-tr from-pink-500 to-yellow-500 text-white shadow-lg"
-            radius="full"
-          >
-            访问源站
-          </Button>
-        </div>
+        <OperationsCom url={url}></OperationsCom>
         <div className="text-right text-sm text-gray-500">
           <div>来源：{source}</div>
           <div>{timestamp}</div>

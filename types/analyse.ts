@@ -1,5 +1,6 @@
 // types.ts
 export interface HotTrendCardProps {
+  url?: string; // 热搜链接
   avatarUrl: string; // 头像图片链接
   title: string; // 热搜标题
   tag?: string; // 标签（例如“热”）

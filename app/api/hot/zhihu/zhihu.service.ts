@@ -13,8 +13,10 @@ interface ZhihuHotItem {
 class ZhihuService extends HotService {
   protected apiUrl: string = 'https://api.vvhan.com/api/hotlist/zhihuHot';
 
+  protected platform: PlatformEnum = PlatformEnum.Zhihu;
+
   protected async transformData(data: any): Promise<ZhihuTrendItem[]> {
-    return data.data.map(
+    const result = data.data.map(
       (item: ZhihuHotItem, index: number) =>
         ({
           id: 'zhihu_' + index.toString(),
@@ -25,6 +27,8 @@ class ZhihuService extends HotService {
           rank: index,
         }) as ZhihuTrendItem,
     );
+
+    return result;
   }
 }
 

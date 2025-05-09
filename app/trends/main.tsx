@@ -7,6 +7,7 @@ import PlatformSelector from './selector';
 
 import { HotTrendsResponse, PlatformEnum } from '@/types';
 import TrendCard from '@/components/TrendCard';
+import { useRequest } from '@/lib/useRequest';
 
 export default function TrendsCom() {
   const [currentPlatform, setCurrentPlatform] = React.useState<PlatformEnum>(PlatformEnum.Weibo);
@@ -16,21 +17,34 @@ export default function TrendsCom() {
     cachedAt: '',
   });
 
-  React.useEffect(() => {
-    const fetchData = async () => {
+  const { loading } = useRequest(
+    async () => {
       const data = await fetch_hot_data(currentPlatform);
+      return data;
+    },
+    {
+      refreshDeps: [currentPlatform],
+      onSuccess: (data) => {
+        setHotData(data);
+      },
+    },
+  );
 
-      setHotData(data);
-    };
+  // React.useEffect(() => {
+  //   const fetchData = async () => {};
 
-    fetchData();
-  }, [currentPlatform]);
+  //   fetchData();
+  // }, [currentPlatform]);
 
   return (
     <div className="flex w-full gap-5">
       <PlatformSelector value={currentPlatform} onChange={(val) => setCurrentPlatform(val)} />
 
-      <TrendCard cachedAt={hotData.cachedAt} data={hotData.hotList} platform={currentPlatform} />
+      <TrendCard
+        cachedAt={hotData.cachedAt}
+        data={loading ? [] : hotData.hotList}
+        platform={currentPlatform}
+      />
     </div>
   );
 }

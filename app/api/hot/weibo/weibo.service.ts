@@ -12,6 +12,7 @@ interface WeiboHotItem {
 
 class WeiboService extends HotService {
   protected apiUrl: string = 'https://weibo.com/ajax/side/hotSearch';
+  protected platform: PlatformEnum = PlatformEnum.Weibo;
 
   protected async transformData(data: any): Promise<WeiboTrendItem[]> {
     return data.data.realtime.map(
