@@ -18,7 +18,7 @@ export const siteConfig = {
     },
     {
       label: '开发',
-      href: '/docs',
+      href: '/openapi',
     },
     {
       label: '关于',

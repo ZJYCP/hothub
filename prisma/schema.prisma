@@ -25,3 +25,15 @@ model HotTrend {
   url       String
   createdAt DateTime @default(now())
 }
+
+model OpenApiApp {
+  id        String   @id @default(cuid())
+  name      String
+  appId     String   @unique
+  appSecret String
+  userId    String
+  remark    String?
+  createdAt DateTime @default(now())
+
+  @@map("open_api_apps")
+}
