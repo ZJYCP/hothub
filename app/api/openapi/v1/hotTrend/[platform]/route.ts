@@ -2,7 +2,10 @@ import { fetch_hot_data } from '@/app/api/hot/hot.service';
 import { PlatformEnum } from '@/types';
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request, { params }: { params: { platform: string } }) {
+interface ParamsType {
+  platform: string;
+}
+export async function GET(request: Request, { params }: { params: Promise<ParamsType> }) {
   const { platform } = await params;
 
   //   判断platform 是否是PlatformEnum中的值

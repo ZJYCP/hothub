@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
-import { useRouter } from 'nextjs-toploader/app';
 
 import { TrendItem } from '@/types';
+import useRouter from '@/lib/useRouter';
 
 interface TrendRowProps {
   data: TrendItem;

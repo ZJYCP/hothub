@@ -14,6 +14,7 @@ export default function MarkdownRender({ content }: MarkdownRenderProps) {
           const match = /language-(\w+)/.exec(className || '');
 
           return match ? (
+            // @ts-ignore
             <SyntaxHighlighter {...rest} PreTag="div" language={match[1]} style={solarizedlight}>
               {String(children).replace(/\n$/, '')}
             </SyntaxHighlighter>
