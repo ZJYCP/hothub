@@ -5,6 +5,7 @@ import _import from 'eslint-plugin-import';
 import { fixupPluginRules } from '@eslint/compat';
 import js from '@eslint/js';
 import nextPlugin from '@next/eslint-plugin-next';
+import globals from 'globals';
 
 export default defineConfig([
   {
@@ -15,8 +16,20 @@ export default defineConfig([
       '@next/next': fixupPluginRules(nextPlugin), // 修改后的插件引入方式
     },
     languageOptions: {
+      globals: {
+        ...Object.fromEntries(Object.entries(globals.browser).map(([key]) => [key, 'off'])),
+        ...globals.node,
+      },
+
       parser: tsParser,
-      ecmaVersion: 'latest',
+      ecmaVersion: 12,
+      sourceType: 'module',
+
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
     },
     rules: {
       'no-console': 'warn',
