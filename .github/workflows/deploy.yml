@@ -58,7 +58,7 @@ jobs:
           target: '/tmp/'
 
   deploy:
-    needs: transfer
+    needs: [build, transfer]
     runs-on: ubuntu-latest
     environment: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'production' }} # Or your appropriate environment logic
     steps:
