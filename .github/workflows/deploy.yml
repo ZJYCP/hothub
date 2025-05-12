@@ -135,6 +135,16 @@ jobs:
             echo "Starting new hothub container with image $NEW_IMAGE_FULL_NAME..."
             docker run -d --name hothub -p 32769:3000 \
               --restart unless-stopped \
+              -e NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
+              -e NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} \
+              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              -e DIRECT_URL=${{ secrets.DIRECT_URL }} \
+              -e OPEN_API_JWT_SECRET=${{ secrets.OPEN_API_JWT_SECRET }} \
+              -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+              -e OPENAI_API_BASE_URL=${{ secrets.OPENAI_API_BASE_URL }} \
+              -e XAI_API_KEY=${{ secrets.XAI_API_KEY }} \
+              -e UNIVERSAL_API_KEY=${{ secrets.UNIVERSAL_API_KEY }} \
+              -e UNIVERSAL_API_BASE_URL=${{ secrets.UNIVERSAL_API_BASE_URL }} \
               --log-driver json-file \
               --log-opt max-size=10m \
               --log-opt max-file=3 \

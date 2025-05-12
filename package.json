@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint --fix"
+    "lint": "eslint --fix",
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^0.2.14",
