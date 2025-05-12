@@ -32,8 +32,12 @@ class ZhihuService extends HotService {
   }
 }
 
-export async function zhihuService() {
+export async function zhihuService(operation: 'fetch' | 'sync' = 'fetch') {
   const zhihuService = ZhihuService.getInstance<ZhihuService>();
 
-  return await zhihuService.fetchHotList();
+  if (operation === 'sync') {
+    return await zhihuService.syncHotTrends();
+  } else if (operation === 'fetch') {
+    return await zhihuService.fetchHotList();
+  }
 }

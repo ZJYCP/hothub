@@ -16,7 +16,7 @@ datasource db {
 
 model HotTrend {
   id        Int      @id @default(autoincrement())
-  title     String   @unique
+  title     String
   analyse   String?
   rank      Int
   heat      Int
@@ -24,6 +24,8 @@ model HotTrend {
   source    String
   url       String
   createdAt DateTime @default(now())
+
+  @@unique([title, source], name: "title_source")
 }
 
 model OpenApiApp {
@@ -36,4 +38,13 @@ model OpenApiApp {
   createdAt DateTime @default(now())
 
   @@map("open_api_apps")
+}
+
+model SyncTaskRecord {
+  id         Int      @id @default(autoincrement())
+  taskName   String   @unique
+  lastSyncAt DateTime
+  createdAt  DateTime @default(now())
+
+  @@map("sync_task_records")
 }

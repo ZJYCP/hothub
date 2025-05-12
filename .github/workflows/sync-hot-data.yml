@@ -1,0 +1,16 @@
+name: Sync Juejin Articles
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  sync-articles:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call Sync Juejin Articles API
+        env:
+          API_KEY: ${{ secrets.GLOBAL_API_KEY }}
+        run: |
+          curl -X GET "https://artimind.top/api/conTask/hotTrends" -H "x-api-key: $GLOBAL_API_KEY"

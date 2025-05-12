@@ -38,55 +38,27 @@ export abstract class HotService {
   async getCachedData() {
     return unstable_cache(
       async () => {
-        const res = await fetch(this.apiUrl);
-        const data = await res.json();
-        const hotList = await this.transformData(data);
-
-        try {
-          const dataExist = await prisma.hotTrend.findMany({
-            where: {
-              source: this.platform,
-            },
-          });
-
-          const newTitleList = hotList.map((item) => item.title);
-          const existTitleList = dataExist.map((item) => item.title);
-          // title 存在的话，就更新； 不存在的话，就创建； 没有了的就删除
-          const updateTitleList = lodash.intersection(newTitleList, existTitleList);
-          const createTitleList = lodash.difference(newTitleList, existTitleList);
-          const deleteTitleList = lodash.difference(existTitleList, newTitleList);
-          // 批量更新操作
-          await prisma.$transaction([
-            ...updateTitleList.map((title) => {
-              const item = hotList.find((item) => item.title === title);
-              return item
-                ? prisma.hotTrend.update({
-                    where: { title },
-                    data: lodash.omit(item, ['id']),
-                  })
-                : prisma.hotTrend.findUnique({ where: { title } });
-            }),
-            // 批量创建操作
-            ...createTitleList.map((title) => {
-              const item = hotList.find((item) => item.title === title);
-              return item
-                ? prisma.hotTrend.create({
-                    data: lodash.omit(item, ['id']),
-                  })
-                : prisma.hotTrend.findUnique({ where: { title } });
-            }),
-            // 批量删除操作
-            ...deleteTitleList.map((title) =>
-              prisma.hotTrend.delete({
-                where: { title },
-              }),
-            ),
-          ]);
-        } catch (error) {
-          console.log('error', error);
-        } finally {
-          return { hotList, cachedAt: new Date().toISOString() };
-        }
+        const lastSyncAt = await prisma.syncTaskRecord.findUnique({
+          where: {
+            taskName: 'hotTrends',
+          },
+        });
+        const data = await prisma.hotTrend.findMany({
+          where: {
+            source: this.platform,
+          },
+          orderBy: {
+            rank: 'asc',
+          },
+        });
+        const hotList = data.map((item, index) => {
+          return {
+            ...item,
+            source: item.source as PlatformEnum,
+            id: `${item.source}-${index.toString()}`,
+          };
+        });
+        return { hotList, cachedAt: (lastSyncAt?.lastSyncAt ?? new Date()).toISOString() };
       },
       [`${this.constructor.name.toLowerCase()}-data`],
       { revalidate: 300 },
@@ -99,5 +71,61 @@ export abstract class HotService {
     this.cachedAt = cachedAt;
 
     return { hotList, cachedAt: this.cachedAt };
+  }
+
+  async syncHotTrends() {
+    const res = await fetch(this.apiUrl);
+    const data = await res.json();
+    const hotList = await this.transformData(data);
+
+    try {
+      const dataExist = await prisma.hotTrend.findMany({
+        where: {
+          source: this.platform,
+        },
+      });
+
+      const newTitleList = hotList.map((item) => item.title);
+      const existTitleList = dataExist.map((item) => item.title);
+      // title 存在的话，就更新； 不存在的话，就创建； 没有了的就删除
+      const updateTitleList = lodash.intersection(newTitleList, existTitleList);
+      const createTitleList = lodash.difference(newTitleList, existTitleList);
+      const deleteTitleList = lodash.difference(existTitleList, newTitleList);
+      // 批量更新操作
+      await prisma.$transaction([
+        ...updateTitleList.map((title) => {
+          const item = hotList.find((item) => item.title === title);
+          return item
+            ? prisma.hotTrend.update({
+                where: { title_source: { title, source: this.platform } },
+                data: lodash.omit(item, ['id']),
+              })
+            : prisma.hotTrend.findUnique({
+                where: { title_source: { title, source: this.platform } },
+              });
+        }),
+        // 批量创建操作
+        ...createTitleList.map((title) => {
+          const item = hotList.find((item) => item.title === title);
+          return item
+            ? prisma.hotTrend.create({
+                data: lodash.omit(item, ['id']),
+              })
+            : prisma.hotTrend.findUnique({
+                where: { title_source: { title, source: this.platform } },
+              });
+        }),
+        // 批量删除操作
+        ...deleteTitleList.map((title) =>
+          prisma.hotTrend.delete({
+            where: { title_source: { title, source: this.platform } },
+          }),
+        ),
+      ]);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      return { hotList, cachedAt: new Date().toISOString() };
+    }
   }
 }

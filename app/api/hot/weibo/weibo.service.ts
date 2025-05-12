@@ -29,8 +29,12 @@ class WeiboService extends HotService {
   }
 }
 
-export async function weiboService() {
+export async function weiboService(operation: 'fetch' | 'sync' = 'fetch') {
   const weiboService = WeiboService.getInstance<WeiboService>();
 
-  return await weiboService.fetchHotList();
+  if (operation === 'fetch') {
+    return await weiboService.fetchHotList();
+  } else if (operation === 'sync') {
+    return await weiboService.syncHotTrends();
+  }
 }

@@ -5,6 +5,7 @@ import TrendRow from './TrendRow';
 
 import { PlatformEnum, TrendItem } from '@/types';
 import { transformPlatformToLabel } from '@/lib/utils';
+import { platformsInfo } from '@/config/platforms';
 
 interface TrendCardProps {
   platform?: PlatformEnum;
@@ -14,29 +15,12 @@ interface TrendCardProps {
 export default function TrendCard(props: TrendCardProps) {
   const { platform, data, cachedAt } = props;
 
-  // 根据platform匹配logo
-  const platformLogoMap: Record<PlatformEnum, string> = {
-    [PlatformEnum.Weibo]: '/images/weibo.svg',
-    [PlatformEnum.Bilibili]: '',
-    [PlatformEnum.Zhihu]: '/images/zhihu.svg',
-    [PlatformEnum.Juejin]: '',
-    [PlatformEnum.Douyin]: '',
-    [PlatformEnum.Github]: '',
-    [PlatformEnum.Twitter]: '',
-    [PlatformEnum.Reddit]: '',
-    [PlatformEnum.Youtube]: '',
-  };
+  const platformInfo = platformsInfo.find((item) => item.id === platform);
 
   return (
     <Card className="flex-1">
       <CardHeader className="flex gap-3">
-        <Image
-          alt="logo"
-          height={40}
-          radius="sm"
-          src={platform ? platformLogoMap[platform] : ''}
-          width={40}
-        />
+        <Image alt="logo" height={40} radius="sm" src={platformInfo?.icon} width={40} />
         <div className="flex ">
           <p className="text-md">{transformPlatformToLabel(platform)}</p>
           {cachedAt && (

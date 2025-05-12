@@ -13,10 +13,12 @@ export default function PlatformSelector(props: PlatformSelectorProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      {platformsInfo.map((platform) => (
-        <button
-          key={platform.id}
-          className={`
+      {platformsInfo
+        .filter((item) => item.enabled)
+        .map((platform) => (
+          <button
+            key={platform.id}
+            className={`
             px-4 py-2 rounded-md transition-all duration-300
             ${
               value === platform.id
@@ -24,11 +26,11 @@ export default function PlatformSelector(props: PlatformSelectorProps) {
                 : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
             }
           `}
-          onClick={() => onChange?.(platform.id)}
-        >
-          {platform.name}
-        </button>
-      ))}
+            onClick={() => onChange?.(platform.id)}
+          >
+            {platform.name}
+          </button>
+        ))}
     </div>
   );
 }

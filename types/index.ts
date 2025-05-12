@@ -13,6 +13,7 @@ export enum PlatformEnum {
   Bilibili = 'bilibili',
   Zhihu = 'zhihu',
   Juejin = 'juejin',
+  Toutiao = 'toutiao',
   Douyin = 'douyin',
   Github = 'github',
   Twitter = 'twitter',
@@ -31,3 +32,5 @@ export interface TrendItem {
 export interface WeiboTrendItem extends TrendItem {}
 
 export interface ZhihuTrendItem extends TrendItem {}
+
+export interface ToutiaoTrendItem extends TrendItem {}

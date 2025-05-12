@@ -59,7 +59,10 @@ export async function POST(req: Request) {
         await close_mcp_handler();
         await prisma.hotTrend.update({
           where: {
-            title: prompt,
+            title_source: {
+              title: prompt,
+              source: platform,
+            },
           },
           data: {
             analyse: res.text,
