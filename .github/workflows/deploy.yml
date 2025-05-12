@@ -2,9 +2,8 @@ name: Deploy to Docker Server
 
 on:
   push:
-    branches: [main]
-    environments:
-      - 'Production'
+    tags:
+      - '*' # 当推送类似 v1.0.0 的标签时触发
   workflow_dispatch:
     inputs:
       environment:
@@ -24,6 +23,10 @@ jobs:
         id: tag
         run: echo "image-tag=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
 
+      - name: Debug environment variables
+        run: |
+          echo "NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
       - name: Build Docker image
         run: docker build --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} -t hothub:${{ steps.tag.outputs.image-tag }} .
 
