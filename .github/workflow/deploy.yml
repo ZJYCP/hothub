@@ -1,0 +1,88 @@
+name: Deploy to Docker Server
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run the workflow'
+        type: environment
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.tag.outputs.image-tag }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate image tag
+        id: tag
+        run: echo "image-tag=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image
+        run: docker build --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} -t hothub:${{ steps.tag.outputs.image-tag }} .
+
+      - name: Save image
+        run: docker save -o hothub.tar hothub:${{ steps.tag.outputs.image-tag }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: hothub.tar
+
+  transfer:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
+      - name: Transfer image to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          source: 'hothub.tar'
+          target: '/tmp/'
+
+  deploy:
+    needs: transfer
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Deploy on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            # 只清理未被使用的旧镜像
+            docker images --filter=reference='hothub*' --filter "dangling=true" --format='{{.ID}}' | xargs -r docker rmi -f || true
+            # 加载新镜像
+            docker load -i /tmp/hothub.tar
+            docker stop hothub || true
+            docker rm hothub || true
+
+            LATEST_TAG=$(docker images --format '{{.Tag}}' --filter=reference='hothub*' | head -n 1)
+            if [ -z "$LATEST_TAG" ]; then
+              echo "Error: Failed to find loaded image tag"
+              docker images  # 打印当前镜像列表用于调试
+              exit 1
+            fi
+            docker run -d --name hothub -p 32769:3000 \
+              --restart unless-stopped \
+              --log-driver json-file \
+              --log-opt max-size=10m \
+              --log-opt max-file=3 \
+              hothub:$LATEST_TAG
