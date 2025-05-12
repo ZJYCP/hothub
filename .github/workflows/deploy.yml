@@ -3,6 +3,8 @@ name: Deploy to Docker Server
 on:
   push:
     branches: [main]
+    environments:
+      - 'Production'
   workflow_dispatch:
     inputs:
       environment:
