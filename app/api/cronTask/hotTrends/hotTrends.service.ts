@@ -13,8 +13,8 @@ export async function syncHotTrends() {
       weiboService('sync'),
       toutiaoService('sync'),
       douyinService('sync'),
-      baiduService('sync'),
-      ke36Service('sync'),
+      // baiduService('sync'),
+      // ke36Service('sync'),
     ]);
     return result;
   } catch (err) {

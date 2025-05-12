@@ -145,6 +145,7 @@ jobs:
               -e XAI_API_KEY=${{ secrets.XAI_API_KEY }} \
               -e UNIVERSAL_API_KEY=${{ secrets.UNIVERSAL_API_KEY }} \
               -e UNIVERSAL_API_BASE_URL=${{ secrets.UNIVERSAL_API_BASE_URL }} \
+              -e GLOBAL_API_KEY=${{ secrets.GLOBAL_API_KEY }} \
               --log-driver json-file \
               --log-opt max-size=10m \
               --log-opt max-file=3 \
