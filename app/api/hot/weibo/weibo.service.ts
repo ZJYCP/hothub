@@ -34,7 +34,7 @@ export async function weiboService(operation: 'fetch' | 'sync' = 'fetch') {
 
   if (operation === 'fetch') {
     return await weiboService.fetchHotList();
-  } else if (operation === 'sync') {
+  } else {
     return await weiboService.syncHotTrends();
   }
 }

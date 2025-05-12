@@ -36,7 +36,7 @@ export async function toutiaoService(operation: 'fetch' | 'sync' = 'fetch') {
   const toutiaoService = ToutiaoService.getInstance<ToutiaoService>();
   if (operation === 'sync') {
     return await toutiaoService.syncHotTrends();
-  } else if (operation === 'fetch') {
+  } else {
     return await toutiaoService.fetchHotList();
   }
 }

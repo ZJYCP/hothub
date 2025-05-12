@@ -37,7 +37,7 @@ export async function zhihuService(operation: 'fetch' | 'sync' = 'fetch') {
 
   if (operation === 'sync') {
     return await zhihuService.syncHotTrends();
-  } else if (operation === 'fetch') {
+  } else {
     return await zhihuService.fetchHotList();
   }
 }

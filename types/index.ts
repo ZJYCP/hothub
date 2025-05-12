@@ -15,9 +15,9 @@ export enum PlatformEnum {
   Juejin = 'juejin',
   Toutiao = 'toutiao',
   Douyin = 'douyin',
-  Github = 'github',
+  Baidu = 'baidu',
   Twitter = 'twitter',
-  Reddit = 'reddit',
+  Ke36 = 'ke36',
   Youtube = 'youtube',
 }
 export interface TrendItem {
@@ -34,3 +34,7 @@ export interface WeiboTrendItem extends TrendItem {}
 export interface ZhihuTrendItem extends TrendItem {}
 
 export interface ToutiaoTrendItem extends TrendItem {}
+
+export interface DouyinTrendItem extends TrendItem {}
+export interface BaiduTrendItem extends TrendItem {}
+export interface Ke36TrendItem extends TrendItem {}
