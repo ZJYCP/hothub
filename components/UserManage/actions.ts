@@ -40,11 +40,13 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp(data);
 
   if (error) {
-    redirect('/error');
+    return {
+      error: error.message,
+    };
   }
-
-  revalidatePath('/', 'layout');
-  redirect('/');
+  return {
+    success: true,
+  };
 }
 
 export async function logout() {

@@ -77,7 +77,7 @@ export default function LoginInModal({ isOpen, onOpenChange }: LoginInModalProps
                   Remember me
                 </Checkbox>
                 <Link color="primary" href="#" size="sm">
-                  Forgot password?
+                  没有账号，注册
                 </Link>
               </div>
             </ModalBody>
