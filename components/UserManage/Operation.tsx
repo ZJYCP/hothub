@@ -2,19 +2,20 @@
 
 import { addToast, Listbox, ListboxItem } from '@heroui/react';
 
-import { createClient } from '@/utils/supabase/client';
+// import { createClient } from '@/utils/supabase/client';
 import { useActionState } from 'react';
 import { useRequest } from '@/lib/useRequest';
+import { logout } from './actions';
 
 export default function Operation() {
-  const supabase = createClient();
-  const { run, loading, data } = useRequest(() => supabase.auth.signOut(), {
+  // const supabase = createClient();
+  const { run, loading, data } = useRequest(logout, {
     manual: true,
     onSuccess: (res) => {
       if (res.error) {
         addToast({
           title: '退出失败',
-          description: res.error.message,
+          description: res.error,
           color: 'danger',
         });
       } else {
