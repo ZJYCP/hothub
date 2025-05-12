@@ -2,13 +2,11 @@
 
 import { addToast, Listbox, ListboxItem } from '@heroui/react';
 
-// import { createClient } from '@/utils/supabase/client';
 import { useActionState } from 'react';
 import { useRequest } from '@/lib/useRequest';
 import { logout } from './actions';
 
 export default function Operation() {
-  // const supabase = createClient();
   const { run, loading, data } = useRequest(logout, {
     manual: true,
     onSuccess: (res) => {

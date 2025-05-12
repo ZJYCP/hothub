@@ -15,6 +15,8 @@ interface IZhiSouData {
   };
 }
 export async function ZhisouService(keyword: string) {
+  // urlEncode
+  keyword = encodeURIComponent(keyword);
   const url = `https://ai.s.weibo.com/api/llm/analysis_tab.json?query=${keyword}&tabindex=0&from=&istag=0&plat=h5`;
 
   const res = await fetch(url, {
