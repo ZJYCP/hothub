@@ -14,6 +14,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'production' }}
+
     outputs:
       image-tag: ${{ steps.tag.outputs.image-tag }}
     steps:
@@ -23,10 +25,6 @@ jobs:
         id: tag
         run: echo "image-tag=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
 
-      - name: Debug environment variables
-        run: |
-          echo "NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
-          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
       - name: Build Docker image
         run: docker build --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} -t hothub:${{ steps.tag.outputs.image-tag }} .
 
@@ -59,35 +57,89 @@ jobs:
           source: 'hothub.tar'
           target: '/tmp/'
 
-  deploy:
-    needs: transfer
-    runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment }}
-    steps:
-      - name: Deploy on server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          port: ${{ secrets.SERVER_PORT }}
-          script: |
-            # 只清理未被使用的旧镜像
-            docker images --filter=reference='hothub*' --filter "dangling=true" --format='{{.ID}}' | xargs -r docker rmi -f || true
-            # 加载新镜像
-            docker load -i /tmp/hothub.tar
-            docker stop hothub || true
-            docker rm hothub || true
+deploy:
+  needs: transfer
+  runs-on: ubuntu-latest
+  environment: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'production' }} # Or your appropriate environment logic
+  steps:
+    - name: Deploy on server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }} # Consider using SSH keys for better security
+        port: ${{ secrets.SERVER_PORT }}
+        script: |
+          set -e # 如果脚本中的任何命令执行失败，立即退出整个脚本
 
-            LATEST_TAG=$(docker images --format '{{.Tag}}' --filter=reference='hothub*' | head -n 1)
-            if [ -z "$LATEST_TAG" ]; then
-              echo "Error: Failed to find loaded image tag"
-              docker images  # 打印当前镜像列表用于调试
-              exit 1
+          # 步骤 1：从构建作业的输出中获取新镜像的标签，并定义完整的镜像名称
+          # 'needs.build.outputs.image-tag' 引用了之前 'build' 作业中定义的输出 'image-tag'
+          NEW_IMAGE_TAG="${{ needs.build.outputs.image-tag }}"
+          if [ -z "$NEW_IMAGE_TAG" ]; then
+            echo "错误：未能从构建作业的输出中获取 image-tag。请检查 'build' 作业是否正确输出了 'image-tag'。" # 输出中文错误信息
+            exit 1 # 因为缺少关键信息，脚本无法继续，故退出
+          fi
+          NEW_IMAGE_FULL_NAME="hothub:$NEW_IMAGE_TAG" # 将仓库名和标签拼接成完整的镜像名，例如：hothub:20250512-010000
+          echo "准备部署的新镜像为: $NEW_IMAGE_FULL_NAME" # 在日志中记录将要部署的镜像信息
+
+          # 步骤 2：从服务器上的 tar 包加载新的 Docker 镜像
+          # 'hothub.tar' 文件是由 'transfer' 作业传输到服务器 /tmp/ 目录下的
+          echo "正在从 /tmp/hothub.tar 加载镜像 $NEW_IMAGE_FULL_NAME ..." # 日志记录当前操作
+          docker load -i /tmp/hothub.tar # 执行 Docker 加载命令
+
+          # 步骤 3：验证新加载的镜像是否存在于本地镜像列表中，并获取其唯一的镜像 ID
+          # 使用 'head -n 1' 是为了确保即使在极少数情况下一个引用指向多个ID（理论上不应如此），也只取第一个
+          NEW_IMAGE_ID=$(docker images --filter=reference="$NEW_IMAGE_FULL_NAME" --format "{{.ID}}" | head -n 1)
+          if [ -z "$NEW_IMAGE_ID" ]; then
+            echo "错误：从 tar 包加载后，未能根据名称 $NEW_IMAGE_FULL_NAME 找到对应镜像的 ID。" # 输出中文错误信息
+            echo "为帮助排查问题，以下列出所有 'hothub' 相关的镜像:"
+            docker images --filter=reference='hothub*' # 列出所有仓库名以 'hothub' 开头的镜像
+            echo "以及系统上当前所有的 Docker 镜像:"
+            docker images # 列出系统上的所有镜像
+            exit 1 # 这是一个关键步骤的失败，脚本无法继续，故退出
+          fi
+          echo "新镜像 $NEW_IMAGE_FULL_NAME (ID: $NEW_IMAGE_ID) 已成功加载并确认。此镜像将被保留。" # 日志记录新镜像的ID
+
+          # 步骤 4：停止并移除当前可能正在运行的同名 Docker 容器 (名为 'hothub')
+          # 这样做是为了释放旧镜像（如果容器正在使用旧版本的话），以便后续的镜像清理步骤可以顺利删除旧镜像
+          echo "正在停止并移除现有的 'hothub' 容器 (如果该容器存在)..." # 日志记录当前操作
+          docker stop hothub || echo "提示：名为 'hothub' 的容器当前未在运行或已被停止。" # 尝试停止容器；如果命令失败（例如容器不存在），则打印提示信息而不是让脚本退出
+          docker rm hothub || echo "提示：名为 'hothub' 的容器未找到或已被移除。"   # 尝试移除容器；如果命令失败，则打印提示信息
+
+          # 步骤 5：清理旧的 'hothub' 镜像版本
+          # 目标是删除所有仓库名为 'hothub' 的镜像，但要排除并保留刚刚加载并准备使用的新版本镜像 (其 ID 为 NEW_IMAGE_ID)
+          echo "开始清理旧的 'hothub' 镜像版本 (将排除并保留 $NEW_IMAGE_FULL_NAME, ID: $NEW_IMAGE_ID)..." # 日志记录清理操作的开始
+          # 获取所有仓库名为 'hothub' 的镜像的 ID 列表
+          ALL_HOTHUB_IMAGE_IDS=$(docker images --filter=reference='hothub' --format "{{.ID}}")
+          REMOVED_COUNT=0 # 初始化已移除镜像的计数器
+          SKIPPED_COUNT=0 # 初始化跳过移除（即保留）镜像的计数器
+
+          for IMAGE_ID_TO_CHECK in $ALL_HOTHUB_IMAGE_IDS; do # 遍历获取到的所有 'hothub' 镜像 ID
+            if [ "$IMAGE_ID_TO_CHECK" != "$NEW_IMAGE_ID" ]; then # 检查当前遍历到的镜像 ID 是否 *不等于* 新部署镜像的 ID
+              echo "准备尝试移除旧的 'hothub' 镜像，其 ID 为: $IMAGE_ID_TO_CHECK" # 日志记录将要移除的镜像 ID
+              # 使用 '-f' (force) 参数强制移除镜像。这可以处理一些常见情况，例如其他标签也指向这个旧镜像层。
+              # 如果这个旧镜像被其他非 'hothub' 容器使用，或者它是其他重要镜像的基础层，移除可能会失败或产生非预期影响，需谨慎。
+              docker rmi -f "$IMAGE_ID_TO_CHECK" || echo "警告：未能成功移除旧镜像 ID $IMAGE_ID_TO_CHECK。它可能仍被其他容器使用、是其他保留镜像的基础层、已被自动清理，或者不存在。" # 尝试删除旧镜像；如果失败，打印警告信息
+              REMOVED_COUNT=$((REMOVED_COUNT + 1)) # 增加已移除镜像的计数
+            else # 如果当前遍历到的镜像 ID *等于* 新部署镜像的 ID
+              echo "跳过移除当前正在部署的新镜像，其 ID 为: $IMAGE_ID_TO_CHECK (名称: $NEW_IMAGE_FULL_NAME)" # 日志记录跳过移除的操作
+              SKIPPED_COUNT=$((SKIPPED_COUNT + 1)) # 增加跳过移除镜像的计数
             fi
-            docker run -d --name hothub -p 32769:3000 \
-              --restart unless-stopped \
-              --log-driver json-file \
-              --log-opt max-size=10m \
-              --log-opt max-file=3 \
-              hothub:$LATEST_TAG
+          done
+          echo "旧 'hothub' 镜像清理操作完成：$REMOVED_COUNT 个旧镜像被尝试移除，$SKIPPED_COUNT 个镜像 (新部署的版本) 被保留。" # 总结清理操作的结果
+
+          # 步骤 6：清理系统中所有悬空的 (dangling) Docker 镜像 (这是一个良好的系统维护习惯)
+          # 悬空镜像是那些没有标签且不被任何容器使用的镜像层，通常是构建过程中产生的中间层或被覆盖的旧镜像层。
+          echo "正在清理系统上所有悬空的 (dangling) 镜像..." # 日志记录当前操作
+          docker image prune -f || echo "提示：Docker image prune 命令执行失败，或者当前没有悬空镜像需要清理。" # 执行清理命令；如果失败或无事可做，打印提示
+
+          # 步骤 7：使用新的镜像运行 Docker 容器
+          echo "准备使用新加载的镜像 $NEW_IMAGE_FULL_NAME 启动 'hothub' 容器..." # 日志记录容器启动操作
+          docker run -d --name hothub -p 32769:3000 \
+            --restart unless-stopped \
+            --log-driver json-file \
+            --log-opt max-size=10m \
+            --log-opt max-file=3 \
+            "$NEW_IMAGE_FULL_NAME" # 使用完整的镜像名（包含标签）来启动容器
+
+          echo "部署脚本已成功执行完毕。新的 'hothub' 容器应该正在运行。" # 标记脚本成功结束
