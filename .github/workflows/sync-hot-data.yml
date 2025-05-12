@@ -14,4 +14,4 @@ jobs:
         env:
           API_KEY: ${{ secrets.GLOBAL_API_KEY }}
         run: |
-          curl -X GET "https://artimind.top/api/conTask/hotTrends" -H "x-api-key: $GLOBAL_API_KEY"
+          curl -X GET "https://artimind.top/api/cronTask/hotTrends" -H "x-api-key: $GLOBAL_API_KEY"
