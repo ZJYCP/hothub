@@ -26,7 +26,7 @@ jobs:
         run: echo "image-tag=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
 
       - name: Build Docker image
-        run: docker build --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} -t hothub:${{ steps.tag.outputs.image-tag }} .
+        run: docker build --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} --build-arg GLOBAL_API_KEY=${{ secrets.GLOBAL_API_KEY }} -t hothub:${{ steps.tag.outputs.image-tag }} .
 
       - name: Save image
         run: docker save -o hothub.tar hothub:${{ steps.tag.outputs.image-tag }}
