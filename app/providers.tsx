@@ -28,7 +28,9 @@ export function Providers({ children, themeProps }: ProvidersProps) {
       {/* 页面进度条 */}
       <NextTopLoader />
 
-      <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+      <NextThemesProvider defaultTheme="light" {...themeProps}>
+        {children}
+      </NextThemesProvider>
     </HeroUIProvider>
   );
 }
