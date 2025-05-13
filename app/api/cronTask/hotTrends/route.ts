@@ -40,6 +40,6 @@ export async function GET(req: Request) {
     }
     return NextResponse.json(res);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to sync hot trends' }, { status: 500 });
+    return NextResponse.json({ message: error }, { status: 500 });
   }
 }
