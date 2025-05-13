@@ -2,7 +2,7 @@ name: Sync HotTrend
 
 on:
   schedule:
-    - cron: '*/6 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -12,6 +12,6 @@ jobs:
     steps:
       - name: Call Sync HotTrend API
         env:
-          API_KEY: ${{ secrets.GLOBAL_API_KEY }}
+          GLOBAL_API_KEY: ${{ secrets.GLOBAL_API_KEY }}
         run: |
           curl -X GET "https://artimind.top/api/cronTask/hotTrends" -H "x-api-key: $GLOBAL_API_KEY"
