@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   const apiKey = req.headers.get('x-api-key');
   const globalApiKey = process.env.GLOBAL_API_KEY;
   if (apiKey !== globalApiKey) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized with ' + apiKey }, { status: 401 });
   }
 
   try {
