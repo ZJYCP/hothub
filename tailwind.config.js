@@ -1,5 +1,5 @@
 import { heroui } from '@heroui/react';
-
+import { platformsInfo } from './config/platforms';
 /** @type {import('tailwindcss').Config} */
 const config = {
   content: [
@@ -63,6 +63,10 @@ const config = {
     },
   },
   darkMode: ['class'],
+  safelist: [
+    ...platformsInfo.map((item) => `bg-${item.color}-500`),
+    ...platformsInfo.map((item) => `dark:bg-${item.color}`),
+  ],
   plugins: [heroui(), require('tailwindcss-animate')],
 };
 

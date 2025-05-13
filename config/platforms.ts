@@ -1,4 +1,4 @@
-import { PlatformEnum } from '@/types';
+import { PlatformEnum } from '../types';
 
 export const platformsInfo = [
   {
@@ -27,20 +27,20 @@ export const platformsInfo = [
     name: '抖音',
     enabled: true,
     icon: '/images/douyin.svg',
-    color: 'gray',
+    color: 'emerald',
   },
   {
     id: PlatformEnum.Baidu,
     name: '百度热点',
     enabled: true,
     icon: '/images/baidu.svg',
-    color: 'blue',
+    color: 'purple',
   },
   {
     id: PlatformEnum.Ke36,
     name: '36氪',
     enabled: true,
     icon: '/images/ke36.svg',
-    color: 'blue',
+    color: 'yellow',
   },
 ];

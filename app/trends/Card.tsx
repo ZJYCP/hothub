@@ -2,9 +2,10 @@
 import { formatTimeSince } from '@/utils/date';
 import { platformsInfo } from '@/config/platforms';
 import { PlatformEnum, TrendItem } from '@/types';
-import { Card, CardBody, CardHeader, Image } from '@heroui/react';
+import { Card, CardBody, CardHeader, Image, ScrollShadow } from '@heroui/react';
 import clsx from 'clsx';
 import CardRow from './CardRow';
+import { useMemo } from 'react';
 
 interface CardProps {
   platform: PlatformEnum;
@@ -14,18 +15,17 @@ interface CardProps {
 
 export default function CardCom(props: CardProps) {
   const { platform, lastSyncTime, data } = props;
-  const platformInfo = platformsInfo.find((item) => item.id === platform)!;
-  //   根据lastSyncTime判断是刚刚更新还是n分钟/小时前更新,要和当前时间比较
+  const platformInfo = useMemo(() => {
+    return platformsInfo.find((item) => item.id === platform)!;
+  }, [platform]);
 
   return (
     <div className="">
       <Card
         isBlurred
-        className={clsx(
-          'w-[400px]',
-          `bg-${platformInfo.color}-500 dark:bg-${platformInfo.color}`,
-          'bg-opacity-40',
-        )}
+        classNames={{
+          base: `w-[400px] bg-opacity-40 bg-${platformInfo.color}-500 dark:bg-${platformInfo.color}`,
+        }}
       >
         <CardHeader className="flex gap-3">
           <Image alt="heroui logo" height={40} radius="sm" src={platformInfo.icon} width={40} />
@@ -35,13 +35,11 @@ export default function CardCom(props: CardProps) {
           </div>
         </CardHeader>
         <CardBody>
-          <div
-            className={clsx('max-h-[400px] overflow-auto p-2 rounded-md bg-white bg-opacity-30')}
-          >
+          <ScrollShadow className="w-full h-[400px] p-2 rounded-md bg-white bg-opacity-30">
             {data.map((item, index) => {
               return <CardRow key={item.id} data={item}></CardRow>;
             })}
-          </div>
+          </ScrollShadow>
         </CardBody>
       </Card>
     </div>
