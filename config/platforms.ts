@@ -43,4 +43,11 @@ export const platformsInfo = [
     icon: '/images/ke36.svg',
     color: 'yellow',
   },
+  {
+    id: PlatformEnum.Thepaper,
+    name: '澎湃热点',
+    enabled: true,
+    icon: '/images/thepaper.svg',
+    color: 'violet',
+  },
 ];

@@ -1,4 +1,3 @@
-'use server';
 import { HotService } from '../base.service';
 
 import { PlatformEnum, ToutiaoTrendItem } from '@/types';
@@ -31,6 +30,7 @@ class ToutiaoService extends HotService {
     return result;
   }
 }
+export const toutiaoServiceInstance = ToutiaoService.getInstance<ToutiaoService>();
 
 export async function toutiaoService(operation: 'fetch' | 'sync' = 'fetch') {
   const toutiaoService = ToutiaoService.getInstance<ToutiaoService>();

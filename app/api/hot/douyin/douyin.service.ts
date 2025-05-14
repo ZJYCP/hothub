@@ -1,4 +1,3 @@
-'use server';
 import { HotService } from '../base.service';
 
 import { PlatformEnum, DouyinTrendItem } from '@/types';
@@ -31,6 +30,7 @@ class DouyinService extends HotService {
     return result;
   }
 }
+export const douyinServiceInstance = DouyinService.getInstance<DouyinService>();
 
 export async function douyinService(operation: 'fetch' | 'sync' = 'fetch') {
   const douyinService = DouyinService.getInstance<DouyinService>();

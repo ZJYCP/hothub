@@ -10,15 +10,12 @@ export interface HotTrendsResponse {
 }
 export enum PlatformEnum {
   Weibo = 'weibo',
-  Bilibili = 'bilibili',
   Zhihu = 'zhihu',
-  Juejin = 'juejin',
   Toutiao = 'toutiao',
   Douyin = 'douyin',
   Baidu = 'baidu',
-  Twitter = 'twitter',
   Ke36 = 'ke36',
-  Youtube = 'youtube',
+  Thepaper = 'thepaper',
 }
 export interface TrendItem {
   id: string;
@@ -27,6 +24,7 @@ export interface TrendItem {
   heat: number;
   rank: number;
   source: PlatformEnum;
+  imageUrl?: string | null;
 }
 
 export interface WeiboTrendItem extends TrendItem {}

@@ -1,4 +1,3 @@
-'use server';
 import { HotService } from '../base.service';
 
 import { PlatformEnum, WeiboTrendItem } from '@/types';
@@ -28,6 +27,8 @@ class WeiboService extends HotService {
     );
   }
 }
+
+export const weiboServiceInstance = WeiboService.getInstance<WeiboService>();
 
 export async function weiboService(operation: 'fetch' | 'sync' = 'fetch') {
   const weiboService = WeiboService.getInstance<WeiboService>();

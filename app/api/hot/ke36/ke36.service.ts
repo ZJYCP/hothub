@@ -1,4 +1,3 @@
-'use server';
 import { HotService } from '../base.service';
 
 import { PlatformEnum, Ke36TrendItem } from '@/types';
@@ -31,7 +30,7 @@ class Ke36Service extends HotService {
     return result;
   }
 }
-
+export const ke36ServiceInstance = Ke36Service.getInstance<Ke36Service>();
 export async function ke36Service(operation: 'fetch' | 'sync' = 'fetch') {
   const ke36Service = Ke36Service.getInstance<Ke36Service>();
   if (operation === 'sync') {

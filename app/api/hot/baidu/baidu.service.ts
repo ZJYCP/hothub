@@ -1,4 +1,3 @@
-'use server';
 import { HotService } from '../base.service';
 
 import { PlatformEnum, BaiduTrendItem } from '@/types';
@@ -31,7 +30,7 @@ class BaiduService extends HotService {
     return result;
   }
 }
-
+export const baiduServiceInstance = BaiduService.getInstance<BaiduService>();
 export async function baiduService(operation: 'fetch' | 'sync' = 'fetch') {
   const baiduService = BaiduService.getInstance<BaiduService>();
   if (operation === 'sync') {

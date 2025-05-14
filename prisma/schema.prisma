@@ -23,6 +23,7 @@ model HotTrend {
   metric    Json?
   source    String
   url       String
+  imageUrl  String?
   createdAt DateTime @default(now())
 
   @@unique([title, source], name: "title_source")

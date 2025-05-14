@@ -22,16 +22,22 @@ export default function CardRow(props: CardRowProps) {
     <div
       className="flex cursor-pointer hover:bg-gray-50/30 items-stretch my-2 rounded-sm text-default-700"
       onClick={() => {
-        router.push(
-          `/analyse?name=${encodeURIComponent(data.title)}&platform=${encodeURIComponent(data.source)}`,
-        );
+        if (platform === PlatformEnum.Weibo) {
+          router.push(
+            `/analyse?name=${encodeURIComponent(data.title)}&platform=${encodeURIComponent(data.source)}`,
+          );
+        } else {
+          window.open(data.url, '_blank');
+        }
       }}
     >
       <div className="w-7 bg-slate-300/30 flex-shrink-0 mr-2 text-default-600 rounded-sm flex items-center justify-center">
         {data.rank + 1}
       </div>
       <div className="flex-grow min-w-0 break-words mr-[4px]">{data.title}</div>
-      <div className="text-sm flex-shrink-0 ml-auto">热度:{heatFormatted}</div>
+      {!(typeof heatFormatted === 'number' && heatFormatted < 0) && (
+        <div className="text-sm flex-shrink-0 ml-auto">热度:{heatFormatted}</div>
+      )}
     </div>
   );
 }
