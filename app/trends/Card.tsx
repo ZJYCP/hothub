@@ -67,7 +67,7 @@ export default function CardCom(props: CardProps) {
         <CardBody>
           <ScrollShadow className="w-full h-[400px] p-2 rounded-md bg-white bg-opacity-30">
             {renderData.map((item, index) => {
-              return <CardRow key={item.id} data={item}></CardRow>;
+              return <CardRow key={item.id} data={item} platformInfo={platformInfo}></CardRow>;
             })}
           </ScrollShadow>
         </CardBody>

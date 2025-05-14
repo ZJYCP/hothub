@@ -1,14 +1,15 @@
 'use client';
+import { IPlatformInfo } from '@/config/platforms';
 import useRouter from '@/lib/useRouter';
 import { PlatformEnum, TrendItem } from '@/types';
 import React, { useMemo } from 'react';
 
 interface CardRowProps {
   data: TrendItem;
-  platform?: PlatformEnum;
+  platformInfo: IPlatformInfo;
 }
 export default function CardRow(props: CardRowProps) {
-  const { data, platform } = props;
+  const { data, platformInfo } = props;
   const router = useRouter();
   const heatFormatted = useMemo(() => {
     if (typeof data.heat === 'number') {
@@ -22,7 +23,7 @@ export default function CardRow(props: CardRowProps) {
     <div
       className="flex cursor-pointer hover:bg-gray-50/30 items-stretch my-2 rounded-sm text-default-700"
       onClick={() => {
-        if (platform === PlatformEnum.Weibo) {
+        if (platformInfo.id === PlatformEnum.Weibo) {
           router.push(
             `/analyse?name=${encodeURIComponent(data.title)}&platform=${encodeURIComponent(data.source)}`,
           );

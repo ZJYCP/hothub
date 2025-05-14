@@ -1,14 +1,17 @@
 'use server';
 import { HotTrendsResponse, PlatformEnum } from '@/types';
-import { weiboService, weiboServiceInstance } from './weibo/weibo.service';
-import { fetch_zhihu_instane, zhihuService, zhihuServiceInstance } from './zhihu/zhihu.service';
-import { toutiaoService, toutiaoServiceInstance } from './toutiao/houtiao.service';
-import { douyinService, douyinServiceInstance } from './douyin/douyin.service';
-import { baiduService, baiduServiceInstance } from './baidu/baidu.service';
-import { ke36Service, ke36ServiceInstance } from './ke36/ke36.service';
+import { weiboServiceInstance } from './weibo/weibo.service';
+import { zhihuServiceInstance } from './zhihu/zhihu.service';
+import { toutiaoServiceInstance } from './toutiao/houtiao.service';
+import { douyinServiceInstance } from './douyin/douyin.service';
+import { baiduServiceInstance } from './baidu/baidu.service';
+import { ke36ServiceInstance } from './ke36/ke36.service';
 import prisma from '@/lib/prisma';
 import { thePaperServiceInstance } from './thepaper/thepaper.service';
 import { HotService } from './base.service';
+import { wallstreetcnServiceInstance } from './wallstreetcn/wallstreetcn.service';
+import { hupuServiceInstance } from './hupu/hupu.service';
+import { hackernewsServiceInstance } from './hackernews/hackernews.service';
 
 const hot_source_instanceMap: Record<PlatformEnum, HotService> = {
   [PlatformEnum.Weibo]: weiboServiceInstance,
@@ -18,6 +21,9 @@ const hot_source_instanceMap: Record<PlatformEnum, HotService> = {
   [PlatformEnum.Douyin]: douyinServiceInstance,
   [PlatformEnum.Baidu]: baiduServiceInstance,
   [PlatformEnum.Ke36]: ke36ServiceInstance,
+  [PlatformEnum.Wallstreetcn]: wallstreetcnServiceInstance,
+  [PlatformEnum.Hupu]: hupuServiceInstance,
+  [PlatformEnum.Hackernews]: hackernewsServiceInstance,
 };
 
 async function fetch_data_from_db(platform?: PlatformEnum) {

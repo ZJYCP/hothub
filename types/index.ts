@@ -16,6 +16,9 @@ export enum PlatformEnum {
   Baidu = 'baidu',
   Ke36 = 'ke36',
   Thepaper = 'thepaper',
+  Wallstreetcn = 'wallstreetcn',
+  Hupu = 'hupu',
+  Hackernews = 'hackernews',
 }
 export interface TrendItem {
   id: string;

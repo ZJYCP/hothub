@@ -73,9 +73,18 @@ export abstract class HotService {
     return { hotList, cachedAt: this.cachedAt };
   }
 
-  async syncHotTrends() {
+  /**
+   * 获取各个平台的数据，默认为url fetch， 可自定义覆写
+   * @returns
+   */
+  protected async fetchData() {
     const res = await fetch(this.apiUrl);
     const data = await res.json();
+    return data;
+  }
+
+  async syncHotTrends() {
+    const data = await this.fetchData();
     const hotList = await this.transformData(data);
 
     try {

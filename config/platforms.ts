@@ -1,6 +1,15 @@
 import { PlatformEnum } from '../types';
+export interface IPlatformInfo {
+  id: PlatformEnum;
+  name: string;
+  enabled: boolean;
+  icon: string;
+  color: string;
+  // 排序字段名
+  heatLabel?: string;
+}
 
-export const platformsInfo = [
+export const platformsInfo: IPlatformInfo[] = [
   {
     id: PlatformEnum.Weibo,
     name: '微博',
@@ -49,5 +58,27 @@ export const platformsInfo = [
     enabled: true,
     icon: '/images/thepaper.svg',
     color: 'violet',
+  },
+  {
+    id: PlatformEnum.Wallstreetcn,
+    name: '华尔街见闻',
+    enabled: true,
+    icon: '/images/wallstreetcn.svg',
+    color: 'orange',
+  },
+  {
+    id: PlatformEnum.Hupu,
+    name: '虎扑',
+    enabled: true,
+    icon: '/images/hupu.svg',
+    color: 'green',
+  },
+  {
+    id: PlatformEnum.Hackernews,
+    name: 'Hacker News',
+    enabled: true,
+    icon: '/images/hackernews.svg',
+    color: 'red',
+    heatLabel: 'points',
   },
 ];
