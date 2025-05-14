@@ -84,7 +84,7 @@ export const siteConfig: SiteConfig = {
     },
   ],
   links: {
-    github: 'https://github.com/heroui-inc/heroui',
+    github: 'https://github.com/ZJYCP/hothub',
     twitter: 'https://twitter.com/hero_ui',
     docs: 'https://heroui.com',
     discord: 'https://discord.gg/9b6yyZKmH4',

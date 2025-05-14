@@ -24,7 +24,7 @@ export default function CardCom(props: CardProps) {
       <Card
         isBlurred
         classNames={{
-          base: `w-[400px] bg-opacity-40 bg-${platformInfo.color}-500 dark:bg-${platformInfo.color}`,
+          base: `lg:w-[400px] sm:w-10/12 bg-opacity-40 bg-${platformInfo.color}-500 dark:bg-${platformInfo.color}`,
         }}
       >
         <CardHeader className="flex gap-3">

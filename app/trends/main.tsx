@@ -44,7 +44,10 @@ export default function TrendsCom(props: TrendsComProps) {
   return (
     <div className="flex w-full gap-5">
       {/* <PlatformSelector value={currentPlatform} onChange={(val) => setCurrentPlatform(val)} /> */}
-      <div className="w-full grid gap-12 grid-cols-[repeat(auto-fit,_minmax(400px,_1fr))]">
+      <div
+        className="w-full grid gap-12 sm:grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))]
+  lg:grid-cols-[repeat(auto-fit,_minmax(400px,_1fr))]"
+      >
         {platformsInfo
           .filter((item) => item.enabled)
           .map((item) => {
