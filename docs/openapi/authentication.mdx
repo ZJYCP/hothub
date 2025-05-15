@@ -1,0 +1,34 @@
+
+# 认证授权
+
+为了保障你的应用和用户数据的安全，所有对业务接口的访问都需要进行身份认证。我们的API采用基于 Access Token 的认证机制。
+
+本章将详细介绍如何获取和使用 Access Token。
+
+## 认证流程概览
+
+1.  使用你的 `app_id` 和 `app_secret` 调用 **获取令牌接口**。
+2.  获取接口返回的 `access_token` 和 `expires_in` (过期时间)。
+3.  在调用 **业务接口** 时，将 `access_token` 放入请求的 `Authorization` Header 中。
+4.  当 `access_token` 过期后，重复步骤 1 重新获取。
+
+## 1. 获取访问令牌 (Access Token)
+
+你需要使用你的 `app_id` 和 `app_secret` 调用 `/api/openapi/auth/token` 接口来获取 Access Token。
+
+- **接口地址**: `[你的API基础URL]/api/openapi/auth/token`
+- **请求方法**: `POST`
+- **请求参数**: 在请求体中以 `application/x-www-form-urlencoded` 或 `multipart/form-data` 形式提交以下参数：
+
+| 参数名       | 类型   | 必填 | 描述         |
+| :----------- | :----- | :--- | :----------- |
+| `app_id`     | string | 是   | 你的应用ID   |
+| `app_secret` | string | 是   | 你的应用密钥 |
+
+- **请求示例 (使用 curl)**:
+
+```bash
+curl -X POST "[你的API基础URL]/api/openapi/auth/token" \
+-H "Content-Type: application/x-www-form-urlencoded" \
+-d "app_id=YOUR_APP_ID&app_secret=YOUR_APP_SECRET"
+```

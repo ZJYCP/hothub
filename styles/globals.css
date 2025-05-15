@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'highlight.js/styles/default.css';
+@tailwind typography;
 
 /* Custom scrollbar styles */
 ::-webkit-scrollbar {

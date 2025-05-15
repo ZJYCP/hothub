@@ -67,7 +67,7 @@ const config = {
     ...platformsInfo.map((item) => `bg-${item.color}-500`),
     ...platformsInfo.map((item) => `dark:bg-${item.color}`),
   ],
-  plugins: [heroui(), require('tailwindcss-animate')],
+  plugins: [heroui(), require('tailwindcss-animate'), require('@tailwindcss/typography')],
 };
 
 module.exports = config;
