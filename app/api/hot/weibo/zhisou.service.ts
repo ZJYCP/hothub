@@ -28,15 +28,15 @@ export async function ZhisouService(keyword: string) {
   const origin = await res.json();
   const zhisou = origin.data as IZhiSouData;
   const result = {
-    emotion_analysis: origin.emotion_analysis,
-    word_cloud: JSON.parse(zhisou.word_cloud.desc).map((item: any) => {
+    emotion_analysis: origin?.emotion_analysis,
+    word_cloud: JSON.parse(zhisou?.word_cloud?.desc ?? '[]').map((item: any) => {
       return {
         name: item.name,
         value: item.value,
         text: item.name,
       };
     }),
-    typical_viewpoint: zhisou.typical_viewpoint.detail.map((item) => item.content),
+    // typical_viewpoint: zhisou.typical_viewpoint.detail.map((item) => item.content),
   };
   return result;
 }

@@ -1,7 +1,7 @@
 'use client';
 import { useCompletion } from '@ai-sdk/react';
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import MarkdownRender from '../Markdown';
 import prisma from '@/lib/prisma';
 
@@ -30,9 +30,14 @@ export default function AiSummaryCom(props: AiSummaryComProps) {
     }
   }, [input]);
 
+  const result = useMemo(() => {
+    if (!content && !completion) return 'loading...';
+    return content ?? completion;
+  }, [content, completion]);
+
   return (
-    <div className="border my-3 p-4 basis-[2/3] min-w-[70%]">
-      <MarkdownRender content={content ?? completion} />;
+    <div className="border my-3 p-4 basis-[2/3] w-[70%]">
+      <MarkdownRender content={result} />
     </div>
   );
 }

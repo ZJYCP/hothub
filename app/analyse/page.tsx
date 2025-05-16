@@ -50,7 +50,7 @@ export default async function AnalysePage(props: AnalysePageProps) {
           <div className="flex flex-col ml-3 my-3 p-4 border flex-shrink">
             <EmotionAnalyse data={zhisouData.emotion_analysis}></EmotionAnalyse>
             <WordCloudCom data={zhisouData.word_cloud}></WordCloudCom>
-            <TypicalViewCom data={zhisouData.typical_viewpoint}></TypicalViewCom>
+            {/* <TypicalViewCom data={zhisouData.typical_viewpoint}></TypicalViewCom> */}
           </div>
         )}
       </div>
