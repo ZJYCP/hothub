@@ -18,12 +18,12 @@ export default function HeroSectionOne() {
         <div className="absolute mx-auto h-px w-40 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
       </div>
       <div className="px-4 py-10 md:py-20">
-        <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
-          {'揭开热搜背后的趋势 - 掌握市场先机'.split(' ').map((word, index) => (
+        <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold  md:text-4xl lg:text-7xl ">
+          {'揭开热搜背后的趋势  掌握市场先机'.split(' ').map((word, index) => (
             <motion.span
               key={index}
               animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-              className="mr-2 inline-block"
+              className="mr-2 inline-block tracking-tight leading-tight bg-gradient-to-r from-indigo-500 to-pink-500 text-transparent bg-clip-text"
               initial={{ opacity: 0, filter: 'blur(4px)', y: 10 }}
               transition={{
                 duration: 0.3,
@@ -48,7 +48,7 @@ export default function HeroSectionOne() {
             delay: 0.8,
           }}
         >
-          用HotTrends深入了解市场动态，预测热搜话题，提升你的品牌影响力
+          用HotTrends深入了解市场动态，助力内容创作者与市场分析者精准决策，提升你的品牌影响力
         </motion.p>
         <motion.div
           animate={{
