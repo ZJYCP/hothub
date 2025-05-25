@@ -70,7 +70,10 @@ export async function fetch_hot_data(platform?: PlatformEnum): Promise<HotTrends
     const hot_service = hot_source_instanceMap[platform];
     return await hot_service.fetchHotList();
   } else {
-    throw new Error(`Unsupported platform: ${platform}`);
+    return {
+      hotList: [],
+      cachedAt: new Date().toISOString(),
+    };
   }
 }
 

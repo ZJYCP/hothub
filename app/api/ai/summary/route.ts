@@ -50,8 +50,8 @@ export async function POST(req: Request) {
       ...bing_mcp_tool,
     };
     const result = streamText({
-      model: deepseek('gemini-2.5-flash-preview-04-17'),
-      //   model: xai('grok-3-mini'),
+      // model: deepseek('gemini-2.5-flash-preview-04-17'),
+      model: xai('grok-3-mini'),
       prompt: generateSummaryPrompt(platform, prompt),
       maxSteps: 10,
       tools,
