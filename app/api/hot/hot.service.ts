@@ -83,8 +83,8 @@ export async function sync_hot_trends(platform?: PlatformEnum) {
       const hot_service = hot_source_instanceMap[platform];
       return await hot_service.syncHotTrends();
     } else {
-      const promises = Object.values(hot_source_instanceMap).map((service) =>
-        service.syncHotTrends(),
+      const promises = Object.values(hot_source_instanceMap).map(
+        async (service) => await service.syncHotTrends(),
       );
       return await Promise.all(promises);
     }

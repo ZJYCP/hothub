@@ -84,10 +84,9 @@ export abstract class HotService {
   }
 
   async syncHotTrends() {
-    const data = await this.fetchData();
-    const hotList = await this.transformData(data);
-
     try {
+      const data = await this.fetchData();
+      const hotList = await this.transformData(data);
       const dataExist = await prisma.hotTrend.findMany({
         where: {
           source: this.platform,
@@ -131,10 +130,10 @@ export abstract class HotService {
           }),
         ),
       ]);
+      return { hotList, cachedAt: new Date().toISOString() };
     } catch (error) {
       console.log('error', error);
-    } finally {
-      return { hotList, cachedAt: new Date().toISOString() };
+      return { hotList: [], cachedAt: new Date().toISOString() };
     }
   }
 }

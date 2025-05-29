@@ -32,7 +32,7 @@ export default function AiSummaryCom(props: AiSummaryComProps) {
 
   const result = useMemo(() => {
     if (!content && !completion) return 'loading...';
-    return content ?? completion;
+    return content || completion;
   }, [content, completion]);
 
   return (

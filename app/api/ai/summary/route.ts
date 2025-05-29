@@ -5,12 +5,13 @@ import { createXai } from '@ai-sdk/xai';
 import { createDeepSeek } from '@ai-sdk/deepseek';
 import prisma from '@/lib/prisma';
 const openai = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENAI_API_BASE_URL,
+  apiKey: process.env.UNIVERSAL_API_KEY,
+  baseURL: process.env.UNIVERSAL_API_BASE_URL,
 });
 
 const xai = createXai({
-  apiKey: process.env.XAI_API_KEY,
+  apiKey: process.env.UNIVERSAL_API_KEY,
+  baseURL: process.env.UNIVERSAL_API_BASE_URL,
 });
 
 const deepseek = createDeepSeek({
@@ -51,23 +52,27 @@ export async function POST(req: Request) {
     };
     const result = streamText({
       // model: deepseek('gemini-2.5-flash-preview-04-17'),
-      model: xai('grok-3-mini'),
+      model: openai('gpt-4.1-mini'),
       prompt: generateSummaryPrompt(platform, prompt),
       maxSteps: 10,
       tools,
       onFinish: async (res) => {
         await close_mcp_handler();
-        await prisma.hotTrend.update({
-          where: {
-            title_source: {
-              title: prompt,
-              source: platform,
+        try {
+          await prisma.hotTrend.update({
+            where: {
+              title_source: {
+                title: prompt,
+                source: platform,
+              },
             },
-          },
-          data: {
-            analyse: res.text,
-          },
-        });
+            data: {
+              analyse: res.text,
+            },
+          });
+        } catch (error) {
+          console.log(error);
+        }
       },
       onError: async (error) => {
         console.log(error);

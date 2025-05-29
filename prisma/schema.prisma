@@ -25,6 +25,7 @@ model HotTrend {
   url       String
   imageUrl  String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([title, source], name: "title_source")
 }
