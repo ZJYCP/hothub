@@ -37,16 +37,15 @@ export async function GET(req: Request) {
     if (shouldRunAnalysis) {
       console.log('开始执行热点分析，距离上次分析已超过1小时');
       await summaryHotTrends();
+      // 5. 更新同步时间记录
+      await prisma.syncTaskRecord.upsert({
+        where: { taskName },
+        update: { lastAnalyseAt: new Date() },
+        create: { taskName, lastSyncAt: new Date(), lastAnalyseAt: new Date() },
+      });
     } else {
       console.log('距离上次分析未超过1小时，跳过本次分析');
     }
-
-    // 5. 更新同步时间记录
-    await prisma.syncTaskRecord.upsert({
-      where: { taskName },
-      update: { lastAnalyseAt: new Date() },
-      create: { taskName, lastSyncAt: new Date(), lastAnalyseAt: new Date() },
-    });
 
     return NextResponse.json({
       message: '热搜数据同步完成',
