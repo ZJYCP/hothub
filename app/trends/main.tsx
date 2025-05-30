@@ -30,7 +30,7 @@ export default function TrendsCom(props: TrendsComProps) {
                   key={item.id}
                   platform={item.id}
                   lastSyncTime={new Date(data.cachedAt)}
-                  data={data?.hotList}
+                  data={data.hotList.sort((a, b) => a.rank - b.rank)}
                 ></CardCom>
               );
             } else {
