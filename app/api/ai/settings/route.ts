@@ -43,19 +43,19 @@ export async function POST(req: Request) {
 }
 
 // 获取特定设置
-export async function GET_BY_KEY(key: string) {
-  try {
-    const setting = await prisma.systemSetting.findUnique({
-      where: { key },
-    });
+// export async function GET_BY_KEY(key: string) {
+//   try {
+//     const setting = await prisma.systemSetting.findUnique({
+//       where: { key },
+//     });
 
-    if (!setting) {
-      return null;
-    }
+//     if (!setting) {
+//       return null;
+//     }
 
-    return setting.value;
-  } catch (error) {
-    console.error(`获取设置 ${key} 失败:`, error);
-    return null;
-  }
-}
+//     return setting.value;
+//   } catch (error) {
+//     console.error(`获取设置 ${key} 失败:`, error);
+//     return null;
+//   }
+// }

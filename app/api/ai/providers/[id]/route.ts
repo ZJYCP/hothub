@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
 // 获取单个AI提供商
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id;
+    const id = (await params).id;
     const provider = await prisma.aIProvider.findUnique({
       where: { id },
     });
@@ -21,9 +21,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
 }
 
 // 更新AI提供商
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id;
+    const id = (await params).id;
     const { name, apiKey, baseUrl } = await request.json();
 
     if (!name || !apiKey || !baseUrl) {
@@ -59,9 +59,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 // 删除AI提供商
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id;
+    const id = (await params).id;
 
     // 检查是否为活跃的提供商
     const provider = await prisma.aIProvider.findUnique({
