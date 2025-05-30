@@ -43,9 +43,9 @@ async function processBatch(hotTrends: any[], batchSize: number) {
 
 /**
  * 汇总热门趋势数据
- * @param batchSize 批次大小，控制并发数量，默认为 5
+ * @param batchSize 批次大小，控制并发数量，默认为 3
  */
-export async function summaryHotTrends(batchSize = 5) {
+export async function summaryHotTrends(batchSize = 3) {
   try {
     console.log('开始处理热门趋势数据');
     const hotTrends = await prisma.hotTrend.findMany({

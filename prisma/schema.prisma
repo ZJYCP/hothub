@@ -43,10 +43,11 @@ model OpenApiApp {
 }
 
 model SyncTaskRecord {
-  id         Int      @id @default(autoincrement())
-  taskName   String   @unique
-  lastSyncAt DateTime
-  createdAt  DateTime @default(now())
+  id            Int       @id @default(autoincrement())
+  taskName      String    @unique
+  lastSyncAt    DateTime
+  lastAnalyseAt DateTime?
+  createdAt     DateTime  @default(now())
 
   @@map("sync_task_records")
 }

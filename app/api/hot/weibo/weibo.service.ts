@@ -7,6 +7,7 @@ interface WeiboHotItem {
   num: string;
   rank: number;
   word_scheme: string;
+  is_ad?: number;
 }
 
 class WeiboService extends HotService {
@@ -14,17 +15,19 @@ class WeiboService extends HotService {
   protected platform: PlatformEnum = PlatformEnum.Weibo;
 
   protected async transformData(data: any): Promise<WeiboTrendItem[]> {
-    return data.data.realtime.map(
-      (item: WeiboHotItem, index: number) =>
-        ({
-          id: 'weibo_' + index.toString(),
-          title: item.note,
-          source: PlatformEnum.Weibo,
-          heat: parseInt(item.num),
-          rank: item.rank,
-          url: `https://s.weibo.com/weibo?q=${encodeURIComponent(item.word_scheme)}`,
-        }) as WeiboTrendItem,
-    );
+    return (data.data.realtime as WeiboHotItem[])
+      .filter((item) => item.is_ad !== 1)
+      .map(
+        (item, index) =>
+          ({
+            id: 'weibo_' + index.toString(),
+            title: item.note,
+            source: PlatformEnum.Weibo,
+            heat: parseInt(item.num),
+            rank: item.rank,
+            url: `https://s.weibo.com/weibo?q=${encodeURIComponent(item.word_scheme)}`,
+          }) as WeiboTrendItem,
+      );
   }
 }
 

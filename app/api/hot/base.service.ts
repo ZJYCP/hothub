@@ -129,6 +129,12 @@ export abstract class HotService {
             where: { title_source: { title, source: this.platform } },
           }),
         ),
+        // 更新同步时间
+        prisma.syncTaskRecord.upsert({
+          where: { taskName: this.platform },
+          update: { lastSyncAt: new Date() },
+          create: { taskName: this.platform, lastSyncAt: new Date() },
+        }),
       ]);
       return { hotList, cachedAt: new Date().toISOString() };
     } catch (error) {

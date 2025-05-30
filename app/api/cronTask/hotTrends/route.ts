@@ -22,7 +22,7 @@ export async function GET(req: Request) {
     const syncResult = await sync_hot_trends();
 
     // 2. 检查是否需要执行热点分析
-    const taskName = 'hotTrends';
+    const taskName = PlatformEnum.Weibo;
     const lastSyncRecord = await prisma.syncTaskRecord.findUnique({
       where: { taskName },
     });
@@ -30,7 +30,8 @@ export async function GET(req: Request) {
     // 3. 判断是否需要执行分析
     const shouldRunAnalysis =
       !lastSyncRecord ||
-      new Date().getTime() - new Date(lastSyncRecord.lastSyncAt).getTime() > ANALYSIS_INTERVAL;
+      !lastSyncRecord.lastAnalyseAt ||
+      new Date().getTime() - new Date(lastSyncRecord.lastAnalyseAt).getTime() > ANALYSIS_INTERVAL;
 
     // 4. 如果需要执行分析，则执行
     if (shouldRunAnalysis) {
@@ -43,8 +44,8 @@ export async function GET(req: Request) {
     // 5. 更新同步时间记录
     await prisma.syncTaskRecord.upsert({
       where: { taskName },
-      update: { lastSyncAt: new Date() },
-      create: { taskName, lastSyncAt: new Date() },
+      update: { lastAnalyseAt: new Date() },
+      create: { taskName, lastSyncAt: new Date(), lastAnalyseAt: new Date() },
     });
 
     return NextResponse.json({
