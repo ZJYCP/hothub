@@ -40,7 +40,7 @@ export abstract class HotService {
       async () => {
         const lastSyncAt = await prisma.syncTaskRecord.findUnique({
           where: {
-            taskName: 'hotTrends',
+            taskName: this.platform,
           },
         });
         const data = await prisma.hotTrend.findMany({

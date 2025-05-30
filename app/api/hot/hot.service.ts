@@ -28,14 +28,6 @@ const hot_source_instanceMap: Record<PlatformEnum, HotService> = {
 
 async function fetch_data_from_db(platform?: PlatformEnum) {
   return await prisma.hotTrend.findMany({
-    select: {
-      id: true,
-      title: true,
-      source: true,
-      url: true,
-      rank: true,
-      heat: true,
-    },
     where: {
       source: platform,
     },
@@ -45,11 +37,8 @@ async function fetch_data_from_db(platform?: PlatformEnum) {
 export async function fetch_hot_data(platform?: PlatformEnum): Promise<HotTrendsResponse> {
   if (!platform) {
     try {
-      const syncTaskRecord = await prisma.syncTaskRecord.findUnique({
-        where: {
-          taskName: 'hotTrends',
-        },
-      });
+      const syncTaskRecord = await prisma.syncTaskRecord.findMany();
+
       const hotList = (await fetch_data_from_db()).map((item) => {
         return {
           ...item,
@@ -57,10 +46,17 @@ export async function fetch_hot_data(platform?: PlatformEnum): Promise<HotTrends
           source: item.source as PlatformEnum,
         };
       });
-      const result = {
-        hotList,
-        cachedAt: syncTaskRecord?.lastSyncAt?.toISOString() || new Date().toISOString(),
-      };
+      const platform_set = new Set(hotList.map((item) => item.source));
+
+      const result = Array.from(platform_set).map((platform) => {
+        return {
+          id: platform,
+          cachedAt:
+            syncTaskRecord.find((item) => item.taskName === platform)?.lastSyncAt?.toISOString() ||
+            new Date().toISOString(),
+          hotList: hotList.filter((item) => item.source === platform),
+        };
+      });
       return result;
     } catch (error) {
       console.error(error);

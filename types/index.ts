@@ -4,10 +4,17 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export interface HotTrendsResponse {
-  hotList: TrendItem[];
-  cachedAt: string;
-}
+export type HotTrendsResponse =
+  | {
+      hotList: TrendItem[];
+      cachedAt: string;
+    }
+  | {
+      id: PlatformEnum;
+      hotList: TrendItem[];
+      cachedAt: string;
+    }[];
+
 export enum PlatformEnum {
   Weibo = 'weibo',
   Zhihu = 'zhihu',
