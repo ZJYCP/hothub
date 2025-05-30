@@ -79,10 +79,15 @@ export async function sync_hot_trends(platform?: PlatformEnum) {
       const hot_service = hot_source_instanceMap[platform];
       return await hot_service.syncHotTrends();
     } else {
-      const promises = Object.values(hot_source_instanceMap).map(
-        async (service) => await service.syncHotTrends(),
-      );
-      return await Promise.all(promises);
+      // const promises = Object.values(hot_source_instanceMap).map(
+      //   async (service) => await service.syncHotTrends(),
+      // );
+      // return await Promise.all(promises);
+      const result = [];
+      for (const service of Object.values(hot_source_instanceMap)) {
+        result.push(await service.syncHotTrends());
+      }
+      return result;
     }
   } catch (error) {
     console.error(error);
