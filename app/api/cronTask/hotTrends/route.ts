@@ -8,7 +8,7 @@ import { sync_hot_trends } from '../../hot/hot.service';
 import { PlatformEnum } from '@/types';
 
 // 定义分析间隔时间（毫秒）
-const ANALYSIS_INTERVAL = 60 * 60 * 1000; // 1小时
+const ANALYSIS_INTERVAL = 30 * 60 * 1000; // 30分钟
 
 export async function GET(req: Request) {
   const apiKey = req.headers.get('x-api-key');

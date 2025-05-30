@@ -3,6 +3,8 @@ import { unstable_cache } from 'next/cache';
 import { PlatformEnum, TrendItem } from '@/types';
 import * as lodash from 'lodash';
 import prisma from '@/lib/prisma';
+import { HotTrend } from '@prisma/client';
+
 /**
  * 抽象类 HotService
  * 用于定义获取热门数据的通用方法
@@ -83,62 +85,146 @@ export abstract class HotService {
     return data;
   }
 
+  /**
+   * 同步热门趋势数据
+   * 优化版本：使用Map数据结构和批量操作API
+   */
   async syncHotTrends() {
     try {
+      // 1. 获取新数据
       const data = await this.fetchData();
-      const hotList = await this.transformData(data);
-      const dataExist = await prisma.hotTrend.findMany({
-        where: {
-          source: this.platform,
-        },
+      const newHotList = await this.transformData(data);
+
+      // 2. 获取现有数据
+      const existingItems = await prisma.hotTrend.findMany({
+        where: { source: this.platform },
       });
 
-      const newTitleList = hotList.map((item) => item.title);
-      const existTitleList = dataExist.map((item) => item.title);
-      // title 存在的话，就更新； 不存在的话，就创建； 没有了的就删除
-      const updateTitleList = lodash.intersection(newTitleList, existTitleList);
-      const createTitleList = lodash.difference(newTitleList, existTitleList);
-      const deleteTitleList = lodash.difference(existTitleList, newTitleList);
-      // 批量更新操作
-      await prisma.$transaction([
-        ...updateTitleList.map((title) => {
-          const item = hotList.find((item) => item.title === title);
-          return item
-            ? prisma.hotTrend.update({
+      // 3. 使用Map优化数据查找
+      const newItemsMap = new Map<string, TrendItem>();
+      newHotList.forEach((item) => {
+        newItemsMap.set(item.title, item);
+      });
+
+      const existingItemsMap = new Map<string, HotTrend>();
+      existingItems.forEach((item) => {
+        existingItemsMap.set(item.title, item);
+      });
+
+      // 4. 计算需要更新、创建和删除的数据
+      const toUpdate: Array<{ title: string; item: any }> = [];
+      const toCreate: Array<any> = [];
+      const toDelete: string[] = [];
+
+      // 找出需要更新或创建的项目
+      newItemsMap.forEach((item, title) => {
+        if (existingItemsMap.has(title)) {
+          toUpdate.push({
+            title,
+            item: lodash.omit(item, ['id']),
+          });
+        } else {
+          toCreate.push(lodash.omit(item, ['id']));
+        }
+      });
+
+      // 找出需要删除的项目
+      existingItemsMap.forEach((_, title) => {
+        if (!newItemsMap.has(title)) {
+          toDelete.push(title);
+        }
+      });
+
+      // 5. 执行数据库操作，使用较小的批次
+      const batchSize = 20;
+      let successCount = 0;
+      let errorCount = 0;
+
+      // 处理更新操作
+      for (let i = 0; i < toUpdate.length; i += batchSize) {
+        try {
+          const batch = toUpdate.slice(i, i + batchSize);
+          await prisma.$transaction(
+            batch.map(({ title, item }) =>
+              prisma.hotTrend.update({
                 where: { title_source: { title, source: this.platform } },
-                data: lodash.omit(item, ['id']),
-              })
-            : prisma.hotTrend.findUnique({
+                data: item,
+              }),
+            ),
+          );
+          successCount += batch.length;
+        } catch (error) {
+          console.error(`更新批次 ${i / batchSize + 1} 失败:`, error);
+          errorCount += Math.min(batchSize, toUpdate.length - i);
+        }
+      }
+
+      // 处理创建操作 - 使用createMany批量API
+      if (toCreate.length > 0) {
+        for (let i = 0; i < toCreate.length; i += batchSize) {
+          try {
+            const createBatch = toCreate.slice(i, i + batchSize);
+            await prisma.hotTrend.createMany({
+              data: createBatch,
+              skipDuplicates: true, // 跳过重复项
+            });
+            successCount += createBatch.length;
+          } catch (error) {
+            console.error(`创建批次 ${i / batchSize + 1} 失败:`, error);
+            // 如果批量创建失败，尝试逐个创建
+            for (const item of toCreate.slice(i, i + batchSize)) {
+              try {
+                await prisma.hotTrend.create({ data: item });
+                successCount++;
+              } catch (innerError) {
+                console.error(`创建单项失败:`, innerError);
+                errorCount++;
+              }
+            }
+          }
+        }
+      }
+
+      // 处理删除操作
+      for (let i = 0; i < toDelete.length; i += batchSize) {
+        try {
+          const batch = toDelete.slice(i, i + batchSize);
+          await prisma.$transaction(
+            batch.map((title) =>
+              prisma.hotTrend.delete({
                 where: { title_source: { title, source: this.platform } },
-              });
-        }),
-        // 批量创建操作
-        ...createTitleList.map((title) => {
-          const item = hotList.find((item) => item.title === title);
-          return item
-            ? prisma.hotTrend.create({
-                data: lodash.omit(item, ['id']),
-              })
-            : prisma.hotTrend.findUnique({
-                where: { title_source: { title, source: this.platform } },
-              });
-        }),
-        // 批量删除操作
-        ...deleteTitleList.map((title) =>
-          prisma.hotTrend.delete({
-            where: { title_source: { title, source: this.platform } },
-          }),
-        ),
-        // 更新同步时间
-        prisma.syncTaskRecord.upsert({
-          where: { taskName: this.platform },
-          update: { lastSyncAt: new Date() },
-          create: { taskName: this.platform, lastSyncAt: new Date() },
-        }),
-      ]);
-      return { hotList, cachedAt: new Date().toISOString() };
+              }),
+            ),
+          );
+          successCount += batch.length;
+        } catch (error) {
+          console.error(`删除批次 ${i / batchSize + 1} 失败:`, error);
+          errorCount += Math.min(batchSize, toDelete.length - i);
+        }
+      }
+
+      // 6. 更新同步时间
+      await prisma.syncTaskRecord.upsert({
+        where: { taskName: this.platform },
+        update: { lastSyncAt: new Date() },
+        create: { taskName: this.platform, lastSyncAt: new Date() },
+      });
+
+      console.log(`同步完成: ${this.platform}, 成功: ${successCount}, 失败: ${errorCount}`);
+
+      return {
+        hotList: newHotList,
+        cachedAt: new Date().toISOString(),
+        stats: {
+          updated: toUpdate.length,
+          created: toCreate.length,
+          deleted: toDelete.length,
+          success: successCount,
+          error: errorCount,
+        },
+      };
     } catch (error) {
-      console.log('error', error);
+      console.error(`同步失败: ${this.platform}`, error);
       return { hotList: [], cachedAt: new Date().toISOString() };
     }
   }
