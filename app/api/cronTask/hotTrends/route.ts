@@ -7,6 +7,9 @@ import prisma from '@/lib/prisma';
 import { sync_hot_trends } from '../../hot/hot.service';
 import { PlatformEnum } from '@/types';
 
+// 定义分析间隔时间（毫秒）
+const ANALYSIS_INTERVAL = 60 * 60 * 1000; // 1小时
+
 export async function GET(req: Request) {
   const apiKey = req.headers.get('x-api-key');
   const globalApiKey = process.env.GLOBAL_API_KEY;
@@ -15,26 +18,42 @@ export async function GET(req: Request) {
   }
 
   try {
-    const res = await sync_hot_trends();
-    // 检查syncTaskRecord中taskName为hotTrends的记录是否存在，如果存在，就更新，如果不存在，就创建
+    // 1. 同步各平台热搜数据
+    const syncResult = await sync_hot_trends();
+
+    // 2. 检查是否需要执行热点分析
     const taskName = 'hotTrends';
-    await prisma.syncTaskRecord.upsert({
-      where: {
-        taskName,
-      },
-      update: {
-        lastSyncAt: new Date(),
-      },
-      create: {
-        taskName,
-        lastSyncAt: new Date(),
-      },
+    const lastSyncRecord = await prisma.syncTaskRecord.findUnique({
+      where: { taskName },
     });
 
-    await summaryHotTrends();
+    // 3. 判断是否需要执行分析
+    const shouldRunAnalysis =
+      !lastSyncRecord ||
+      new Date().getTime() - new Date(lastSyncRecord.lastSyncAt).getTime() > ANALYSIS_INTERVAL;
 
-    return NextResponse.json({ message: res });
+    // 4. 如果需要执行分析，则执行
+    if (shouldRunAnalysis) {
+      console.log('开始执行热点分析，距离上次分析已超过1小时');
+      await summaryHotTrends();
+    } else {
+      console.log('距离上次分析未超过1小时，跳过本次分析');
+    }
+
+    // 5. 更新同步时间记录
+    await prisma.syncTaskRecord.upsert({
+      where: { taskName },
+      update: { lastSyncAt: new Date() },
+      create: { taskName, lastSyncAt: new Date() },
+    });
+
+    return NextResponse.json({
+      message: '热搜数据同步完成',
+      syncResult,
+      analysisPerformed: shouldRunAnalysis,
+    });
   } catch (error) {
-    return NextResponse.json({ message: error }, { status: 500 });
+    console.error('热搜数据同步或分析失败:', error);
+    return NextResponse.json({ error: '处理失败', details: error }, { status: 500 });
   }
 }
