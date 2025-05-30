@@ -13,7 +13,7 @@ const DEFAULT_AI_CONFIG = {
 // 系统设置键名
 export const SYSTEM_SETTINGS = {
   AI_PROVIDER: 'ai_provider',
-  AI_MODEL: 'ai_model',
+  SUMMARY_MODEL: 'summary_model',
 };
 
 /**
@@ -58,7 +58,7 @@ export async function getActiveAIModel() {
   try {
     // 从系统设置中获取当前使用的模型
     const modelSetting = await prisma.systemSetting.findUnique({
-      where: { key: SYSTEM_SETTINGS.AI_MODEL },
+      where: { key: SYSTEM_SETTINGS.SUMMARY_MODEL },
     });
 
     return modelSetting?.value || DEFAULT_AI_CONFIG.model;
