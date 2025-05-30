@@ -5,6 +5,7 @@ import { createXai } from '@ai-sdk/xai';
 import { createDeepSeek } from '@ai-sdk/deepseek';
 import prisma from '@/lib/prisma';
 import { PlatformEnum } from '@/types';
+import { createAIClient, createMCPClients } from '@/lib/aiConfig';
 const openai = createOpenAI({
   apiKey: process.env.UNIVERSAL_API_KEY,
   baseURL: process.env.UNIVERSAL_API_BASE_URL,
@@ -25,24 +26,13 @@ interface SummaryHotbyWordProps {
   prompt: string;
 }
 export async function summaryHotbyWord({ platform, prompt }: SummaryHotbyWordProps) {
-  const tavily_client = await experimental_createMCPClient({
-    transport: {
-      type: 'sse',
-      url: 'https://mcp.api-inference.modelscope.cn/sse/708d1609105141',
-    },
-  });
-  const bing_client = await experimental_createMCPClient({
-    transport: {
-      type: 'sse',
-      url: 'https://mcp.api-inference.modelscope.cn/sse/7457125319da45',
-    },
-  });
-
-  const close_mcp_handler = async () => {
-    // await tavily_client.close();
-    await bing_client.close();
-  };
   try {
+    // 使用配置创建AI客户端
+    const { client, model } = await createAIClient();
+
+    // 创建MCP客户端
+    const { tavily_client, bing_client, close: close_mcp_handler } = await createMCPClients();
+
     const tavily_mcp_tool = await tavily_client.tools();
     const bing_mcp_tool = await bing_client.tools();
 
@@ -52,16 +42,14 @@ export async function summaryHotbyWord({ platform, prompt }: SummaryHotbyWordPro
     };
 
     const { text } = await generateText({
-      model: openai('gpt-4.1-mini'),
+      model: client(model),
       prompt: generateSummaryPrompt(platform, prompt),
       maxSteps: 10,
       tools,
     });
-
+    await close_mcp_handler();
     return text;
   } catch (error) {
-    throw error;
-  } finally {
-    await close_mcp_handler();
+    console.log(error);
   }
 }
