@@ -50,3 +50,26 @@ model SyncTaskRecord {
 
   @@map("sync_task_records")
 }
+
+model AIProvider {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  apiKey    String
+  baseUrl   String
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("ai_providers")
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("system_settings")
+}
